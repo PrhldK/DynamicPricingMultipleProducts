@@ -30,9 +30,9 @@ $(document).ready(function() {
                 // Show results
                 fillResultTable(res.meta.betaCount, res.meta.maxObservations, res.data);
 
-                renderChart($('#betaAChart'), 'Beta Coefficients Product A',
+                renderChart($('.beta-chart.a'), 'Beta Coefficients Product A',
                             res.meta.minObservations , res.meta.maxObservations, res.data[0]);
-                renderChart($('#betaBChart'), 'Beta Coefficients Product B',
+                renderChart($('.beta-chart.b'), 'Beta Coefficients Product B',
                             res.meta.minObservations , res.meta.maxObservations, res.data[1]);
             },
             complete: function() {
@@ -46,7 +46,7 @@ $(document).ready(function() {
 
     function fillResultTable(betaCount, maxObservations, data) {
         // Remove existing beta rows
-        $("#betaResults > tr").remove();
+        $(".beta-table > tr").remove();
 
         for(var j = 0; j < betaCount; j++) {
             // Create new row
@@ -63,7 +63,7 @@ $(document).ready(function() {
             }
 
             // Append row to table
-            $('#betaResults').append(row);
+            $('.beta-table').append(row);
         }
 
         // Render mathjax content
