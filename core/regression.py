@@ -16,6 +16,40 @@ class LogisticRegressor:
 
     def train(self, coeff_intercept, coeff_price_A, coeff_price_B,
               coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
+        # Calculate sale probabilities
+        sale_probs, ranks, prices, competitor_prices = self.generate_situation(coeff_intercept,
+                                                                               coeff_price_A, coeff_price_B,
+                                                                               coeff_min_comp_A, coeff_min_comp_B,
+                                                                               coeff_rank_A, coeff_rank_B)
+
+        # Run regression
+        explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in range(2)]
+        logits = [sm.Logit(sale_probs[i], explanatory_vars[i].transpose()) for i in range(2)]
+
+        return [logits[i].fit().params.tolist() for i in range(2)]
+
+    def train_iteratively(self, coeff_intercept, coeff_price_A, coeff_price_B,
+                         coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
+        # Calculate sale probabilities
+        sale_probs, ranks, prices, competitor_prices = self.generate_situation(coeff_intercept,
+                                                                               coeff_price_A, coeff_price_B,
+                                                                               coeff_min_comp_A, coeff_min_comp_B,
+                                                                               coeff_rank_A, coeff_rank_B)
+
+        # Run regressions
+        explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in range(2)]
+        betas = np.empty(shape=(2, self.observations_count, len(explanatory_vars[0])))
+        for k in range(20, self.observations_count):
+            logits = [sm.Logit(sale_probs[i][:(k + 1)], explanatory_vars[i].transpose()[:(k + 1)]) for i in range(2)]
+            for i in range(2):
+                result = logits[i].fit().params.tolist()
+                betas[i, k] = result
+
+        return np.swapaxes(betas, 1, 2).tolist()
+
+
+    def generate_situation(self, coeff_intercept, coeff_price_A, coeff_price_B,
+                           coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
         # Generate prices
         prices = np.array([self.generate_prices(self.prices_ranges[i]) for i in range(2)])
         competitor_prices = np.array([self.generate_competitor_prices(self.prices_ranges[i]) for i in range(2)])
@@ -28,11 +62,7 @@ class LogisticRegressor:
                                                 coeff_rank_A[i], coeff_rank_B[i])
                       for i in range(2)]
 
-        # Run regression
-        explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in range(2)]
-        logits = [sm.Logit(sale_probs[i], explanatory_vars[i].transpose()) for i in range(2)]
-        results = [logits[i].fit() for i in range(2)]
-        return [results[i].params.tolist() for i in range(2)]
+        return sale_probs, ranks, prices, competitor_prices
 
     def generate_prices(self, prices_range):
         return np.random.choice(prices_range, self.observations_count)

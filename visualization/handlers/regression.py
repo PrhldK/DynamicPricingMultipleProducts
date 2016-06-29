@@ -24,13 +24,13 @@ class RegressionHandler(tornado.web.RequestHandler):
         coeff_B_rank_B = float(self.get_argument('coeffBRankB'))
 
         regressor = LogisticRegressor(1, 20, 0.1, 5, 1000)
-        betas = regressor.train((coeff_A_intercept, coeff_B_intercept),
-                                (coeff_A_price_A, coeff_B_price_A),
-                                (coeff_A_price_B, coeff_B_price_B),
-                                (coeff_A_min_comp_A, coeff_B_min_comp_A),
-                                (coeff_A_min_comp_B, coeff_B_min_comp_B),
-                                (coeff_A_rank_A, coeff_B_rank_A),
-                                (coeff_A_rank_B, coeff_B_rank_B))
+        betas = regressor.train_iteratively((coeff_A_intercept, coeff_B_intercept),
+                                            (coeff_A_price_A, coeff_B_price_A),
+                                            (coeff_A_price_B, coeff_B_price_B),
+                                            (coeff_A_min_comp_A, coeff_B_min_comp_A),
+                                            (coeff_A_min_comp_B, coeff_B_min_comp_B),
+                                            (coeff_A_rank_A, coeff_B_rank_A),
+                                            (coeff_A_rank_B, coeff_B_rank_B))
 
         self.write(json.dumps(betas))
 

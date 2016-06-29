@@ -1,6 +1,9 @@
 <!-- Custom JS -->
 <script type="text/javascript" src="{{ static_url('js/regression.js') }}"></script>
 
+<!-- Custom CSS -->
+<link type="text/css" rel="stylesheet" href="{{ static_url('css/regression.css') }}" />
+
 <!-- Content -->
 <div class="col s6">
     <h4>Coefficients</h4>
@@ -70,4 +73,7 @@
         </tr>
         </thead>
     </table>
+
+    <div class="ct-chart ct-golden-section" id="betaAChart"></div>
+    <div class="ct-chart ct-golden-section" id="betaBChart"></div>
 </div>
