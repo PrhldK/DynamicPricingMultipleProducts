@@ -22,11 +22,6 @@ $(document).ready(function() {
             coeffBRankA: $('#coeffBRankA').val(),
             coeffBRankB: $('#coeffBRankB').val()
         }, function(res) {
-            // Show loading indicators
-            $('#btnStartRegression').addClass('disabled');
-            $('.regression-preloader').removeClass('hide');
-            $('.result-container').addClass('hide');
-
             // Show results
             fillResultTable(res.meta.betaCount, res.meta.maxObservations, res.data);
             renderCharts(res.meta.minObservations, res.meta.maxObservations, res.data);
