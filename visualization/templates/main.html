@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Pricing</title>
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="{{ static_url('js/jquery/jquery-3.0.0.min.js') }}"></script>
+
+    <!-- Materialize-->
+    <script type="text/javascript" src="{{ static_url('js/materialize/materialize.min.js') }}"></script>
+    <link type="text/css" rel="stylesheet" href="{{ static_url('css/material-icons.css') }}" />
+    <link type="text/css" rel="stylesheet" href="{{ static_url('css/materialize.min.css') }}" media="screen,projection" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ]
+            },
+            messageStyle: 'none'
+        });
+    </script>
+    <script type="text/javascript" async src="{{ static_url('js/mathjax/MathJax.js') }}&config=TeX-MML-AM_CHTML"></script>
+
+    <!-- Custom JS-->
+    <script type="text/javascript" src="{{ static_url('js/regression.js') }}"></script>
+</head>
+<body>
+    <div class="row">
+        <!-- Tab Navigation -->
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s3"><a class="active" href="#regression-container">Regression</a></li>
+                <li class="tab col s3"><a href="#game-container">Game</a></li>
+                <li class="tab col s3"><a href="#simulation-container">Simulation</a></li>
+            </ul>
+        </div>
+
+        <!-- Regression -->
+        <div id="regression-container" class="col s12">
+            <div class="col s6">
+                <h4>Coefficients</h4>
+
+                <div class="col s6">
+                    <h5>Product A</h5>
+
+                    <label for="coeffAIntercept">Intercept:</label>
+                    <input type="text" id="coeffAIntercept" value="1.0" />
+
+                    <label for="coeffAPriceA">Price A:</label>
+                    <input type="text" id="coeffAPriceA" value="1.0" />
+
+                    <label for="coeffAPriceB">Price B:</label>
+                    <input type="text" id="coeffAPriceB" value="1.0" />
+
+                    <label for="coeffAMinCompA">Minimal competitor price A:</label>
+                    <input type="text" id="coeffAMinCompA" value="1.0" />
+
+                    <label for="coeffAMinCompB">Minimal competitor price B:</label>
+                    <input type="text" id="coeffAMinCompB" value="1.0" />
+
+                    <label for="coeffARankA">Rank A:</label>
+                    <input type="text" id="coeffARankA" value="1.0" />
+
+                    <label for="coeffARankB">Rank B:</label>
+                    <input type="text" id="coeffARankB" value="1.0" />
+                </div>
+
+                <div class="col s6">
+                    <h5>Product B</h5>
+
+                    <label for="coeffBIntercept">Intercept:</label>
+                    <input type="text" id="coeffBIntercept" value="1.0" />
+
+                    <label for="coeffBPriceA">Price A:</label>
+                    <input type="text" id="coeffBPriceA" value="1.0" />
+
+                    <label for="coeffBPriceB">Price B:</label>
+                    <input type="text" id="coeffBPriceB" value="1.0" />
+
+                    <label for="coeffBMinCompA">Minimal competitor price A:</label>
+                    <input type="text" id="coeffBMinCompA" value="1.0" />
+
+                    <label for="coeffBMinCompB">Minimal competitor price B:</label>
+                    <input type="text" id="coeffBMinCompB" value="1.0" />
+
+                    <label for="coeffBRankA">Rank A:</label>
+                    <input type="text" id="coeffBRankA" value="1.0" />
+
+                    <label for="coeffBRankB">Rank B:</label>
+                    <input type="text" id="coeffBRankB" value="1.0" />
+                </div>
+
+                <a class="waves-effect waves-light btn" id="btnStartRegression"><i class="material-icons left">cached</i>Start Regression</a>
+            </div>
+
+            <div class="col s6">
+                <h4>Result</h4>
+
+                <table id="betaResults">
+                    <thead>
+                        <tr>
+                            <th data-field="beta">Coefficient</th>
+                            <th data-field="productA">Product A</th>
+                            <th data-field="productB">Product B</th>
+                        </tr>
+                    </thead>
+            </div>
+        </div>
+
+        <!-- Game -->
+        <div id="game-container" class="col s12">
+        </div>
+
+        <!-- Simulation -->
+        <div id="simulation-container" class="col s12">
+        </div>
+    </div>
+</body>
+</html>
