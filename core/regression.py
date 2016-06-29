@@ -29,7 +29,7 @@ class LogisticRegressor:
         return [logits[i].fit().params.tolist() for i in range(2)]
 
     def train_iteratively(self, coeff_intercept, coeff_price_A, coeff_price_B,
-                         coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
+                         coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B, min_observations=10):
         # Calculate sale probabilities
         sale_probs, ranks, prices, competitor_prices = self.generate_situation(coeff_intercept,
                                                                                coeff_price_A, coeff_price_B,
@@ -39,14 +39,13 @@ class LogisticRegressor:
         # Run regressions
         explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in range(2)]
         betas = np.empty(shape=(2, self.observations_count, len(explanatory_vars[0])))
-        for k in range(20, self.observations_count):
+        for k in range(min_observations, self.observations_count):
             logits = [sm.Logit(sale_probs[i][:(k + 1)], explanatory_vars[i].transpose()[:(k + 1)]) for i in range(2)]
             for i in range(2):
-                result = logits[i].fit().params.tolist()
+                result = logits[i].fit(disp=False).params.tolist()
                 betas[i, k] = result
 
         return np.swapaxes(betas, 1, 2).tolist()
-
 
     def generate_situation(self, coeff_intercept, coeff_price_A, coeff_price_B,
                            coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):

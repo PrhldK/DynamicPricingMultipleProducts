@@ -5,60 +5,79 @@
 <link type="text/css" rel="stylesheet" href="{{ static_url('css/regression.css') }}" />
 
 <!-- Content -->
-<h4>Coefficients</h4>
-<div>$y_1 = Uniform(0, $
-    <input class="coeff-input" type="text" id="coeffAIntercept" value="1.0" />
-    $\  + $
-    <input class="coeff-input" type="text" id="coeffAPriceA" value="1.0" />
-    $\ *\  a_1\  + $
-    <input class="coeff-input" type="text" id="coeffAPriceB" value="1.0" />
-    $\ *\  a_2\  + $
-    <input class="coeff-input" type="text" id="coeffAMinCompA" value="1.0" />
-    $*\ min(\overrightarrow{p_1})\ + $
-    <input class="coeff-input" type="text" id="coeffAMinCompB" value="1.0" />
-    $*\ min(\overrightarrow{p_2})\ + $
-    <input class="coeff-input" type="text" id="coeffARankA" value="1.0" />
-    $\ *\  r_1\  + $
-    <input class="coeff-input" type="text" id="coeffARankB" value="1.0" />
-    $\ *\  r_2)$</div>
+<div class="col col12">
+    <h4>Coefficients</h4>
+    <div>
+        $y_1 = Uniform(0, $
+        <input class="coeff-input" type="text" id="coeffAIntercept" value="1.0" />
+        $\  + $
+        <input class="coeff-input" type="text" id="coeffAPriceA" value="1.0" />
+        $\ *\  a_1\  + $
+        <input class="coeff-input" type="text" id="coeffAPriceB" value="1.0" />
+        $\ *\  a_2\  + $
+        <input class="coeff-input" type="text" id="coeffAMinCompA" value="1.0" />
+        $*\ min(\overrightarrow{p_1})\ + $
+        <input class="coeff-input" type="text" id="coeffAMinCompB" value="1.0" />
+        $*\ min(\overrightarrow{p_2})\ + $
+        <input class="coeff-input" type="text" id="coeffARankA" value="1.0" />
+        $\ *\  r_1\  + $
+        <input class="coeff-input" type="text" id="coeffARankB" value="1.0" />
+        $\ *\  r_2)$
+    </div>
 
-<div>$y_2 = Uniform(0, $
-    <input class="coeff-input" type="text" id="coeffBIntercept" value="1.0" />
-    $\  + $
-    <input class="coeff-input" type="text" id="coeffBPriceA" value="1.0" />
-    $\ *\  a_1\  + $
-    <input class="coeff-input" type="text" id="coeffBPriceB" value="1.0" />
-    $\ *\  a_2\  + $
-    <input class="coeff-input" type="text" id="coeffBMinCompA" value="1.0" />
-    $*\ min(\overrightarrow{p_1})\ + $
-    <input class="coeff-input" type="text" id="coeffBMinCompB" value="1.0" />
-    $*\ min(\overrightarrow{p_2})\ + $
-    <input class="coeff-input" type="text" id="coeffBRankA" value="1.0" />
-    $\ *\  r_1\  + $
-    <input class="coeff-input" type="text" id="coeffBRankB" value="1.0" />
-    $\ *\  r_2)$</div>
+    <div>
+        $y_2 = Uniform(0, $
+        <input class="coeff-input" type="text" id="coeffBIntercept" value="1.0" />
+        $\  + $
+        <input class="coeff-input" type="text" id="coeffBPriceA" value="1.0" />
+        $\ *\  a_1\  + $
+        <input class="coeff-input" type="text" id="coeffBPriceB" value="1.0" />
+        $\ *\  a_2\  + $
+        <input class="coeff-input" type="text" id="coeffBMinCompA" value="1.0" />
+        $*\ min(\overrightarrow{p_1})\ + $
+        <input class="coeff-input" type="text" id="coeffBMinCompB" value="1.0" />
+        $*\ min(\overrightarrow{p_2})\ + $
+        <input class="coeff-input" type="text" id="coeffBRankA" value="1.0" />
+        $\ *\  r_1\  + $
+        <input class="coeff-input" type="text" id="coeffBRankB" value="1.0" />
+        $\ *\  r_2)$
+    </div>
 
-
-
-<a class="waves-effect waves-light btn" id="btnStartRegression"><i class="material-icons left">cached</i>Start Regression</a>
-
-
-<h4>Result</h4>
-
-<table id="betaResults">
-    <thead>
-    <tr>
-        <th data-field="beta">Coefficient</th>
-        <th data-field="productA">Product A</th>
-        <th data-field="productB">Product B</th>
-    </tr>
-    </thead>
-</table>
-
-<div class="col s6">
-    <div class="ct-chart ct-golden-section" id="betaAChart"></div>
+    <a class="waves-effect waves-light btn" id="btnStartRegression">
+        <i class="material-icons left">cached</i>Start Regression
+    </a>
+    <div class="regression-preloader preloader-wrapper active hide">
+        <div class="spinner-layer spinner-red-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
 </div>
+<div class="col s12 result-container hide">
+    <h4>Result</h4>
 
-<div class="col s6">
-    <div class="ct-chart ct-golden-section" id="betaBChart"></div>
+    <table id="betaResults">
+        <thead>
+        <tr>
+            <th data-field="beta">Coefficient</th>
+            <th data-field="productA">Product A</th>
+            <th data-field="productB">Product B</th>
+        </tr>
+        </thead>
+    </table>
+
+    <div class="col s6">
+        <div class="ct-chart ct-golden-section" id="betaAChart"></div>
+    </div>
+
+    <div class="col s6">
+        <div class="ct-chart ct-golden-section" id="betaBChart"></div>
+    </div>
 </div>
