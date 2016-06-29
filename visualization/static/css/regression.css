@@ -1,15 +1,24 @@
-.ct-line {
-    /* Control the thickness of your lines */
-    stroke-width: 1px;
-}
-
-.coeff-input{
+.regression-container .coeff-input{
     width: 30px !important;
     text-align: right;
     margin-right: 10px !important;
 }
 
-.comp-input{
+.regression-container .regression-preloader {
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.regression-container .result-container {
+    margin-top: 15px;
+}
+
+.regression-container .ct-line {
+    stroke-width: 1px;
+}
+.game-container .comp-input{
     width: 50px !important;
     text-align: right;
     margin-right: 20px !important;
