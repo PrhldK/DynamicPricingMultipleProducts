@@ -35,6 +35,13 @@
             });
         </script>
         <script type="text/javascript" async src="{{ static_url('js/mathjax/MathJax.js') }}&config=TeX-MML-AM_CHTML"></script>
+
+        <!-- Custom JS -->
+        <script type="text/javascript" src="{{ static_url('js/regression.js') }}"></script>
+
+        <!-- Custom CSS -->
+        <link type="text/css" rel="stylesheet" href="{{ static_url('css/regression.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ static_url('css/game.css') }}" />
     </head>
     <body>
         {% block content %}

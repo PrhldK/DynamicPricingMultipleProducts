@@ -1,4 +1,3 @@
-/* Regression Container */
 #regression-container .coeff-input{
     width: 30px !important;
     text-align: right;
@@ -18,12 +17,4 @@
 
 #regression-container .ct-line {
     stroke-width: 1px;
-}
-
-
-/* Game Container */
-#game-container .comp-input{
-    width: 50px !important;
-    text-align: right;
-    margin-right: 20px !important;
 }
