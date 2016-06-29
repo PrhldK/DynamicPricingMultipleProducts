@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dynamic Pricing</title>
+
+        <!-- jQuery -->
+        <script type="text/javascript" src="{{ static_url('js/jquery/jquery-3.0.0.min.js') }}"></script>
+
+        <!-- Materialize-->
+        <script type="text/javascript" src="{{ static_url('js/materialize/materialize.min.js') }}"></script>
+        <link type="text/css" rel="stylesheet" href="{{ static_url('css/material-icons.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ static_url('css/materialize.min.css') }}" media="screen,projection" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <!-- MathJax -->
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+                tex2jax: {
+                    inlineMath: [
+                        ['$', '$'],
+                        ['\\(', '\\)']
+                    ]
+                },
+                messageStyle: 'none'
+            });
+        </script>
+        <script type="text/javascript" async src="{{ static_url('js/mathjax/MathJax.js') }}&config=TeX-MML-AM_CHTML"></script>
+    </head>
+    <body>
+        {% block content %}
+        {% end %}
+    </body>
+</html>
