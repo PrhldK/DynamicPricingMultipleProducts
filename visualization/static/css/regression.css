@@ -2,3 +2,9 @@
     /* Control the thickness of your lines */
     stroke-width: 1px;
 }
+
+.coeff-input{
+    width: 30px !important;
+    text-align: right;
+    margin-right: 10px !important;
+}
