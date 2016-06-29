@@ -1,6 +1,6 @@
-<div class="col col12">
-    <h4>Sale Probability Estimation</h4>
-    <div>
+<div class="col s12">
+    <h5>Sale Probability Estimation</h5>
+    <div class="col s12">
         $y_1 = Uniform(0, $
         <input class="coeff-input" type="text" id="coeffAIntercept" value="1.0" />
         $\  + $
@@ -18,7 +18,7 @@
         $\ *\  r_2)$
     </div>
 
-    <div>
+    <div class="col s12">
         $y_2 = Uniform(0, $
         <input class="coeff-input" type="text" id="coeffBIntercept" value="1.0" />
         $\  + $
@@ -54,37 +54,38 @@
     </div>
 </div>
 <div class="col s12 result-container hide">
-    <h4>Results</h4>
-
-    <ul class="collapsible" data-collapsible="accordion">
-        <li>
-            <div class="collapsible-header"><i class="material-icons">label</i>Computed beta coefficients</div>
-            <div class="collapsible-body">
-                <div class="collapsible-container">
-                    <table class="beta-table">
-                        <thead>
-                        <tr>
-                            <th data-field="beta">Coefficient</th>
-                            <th data-field="productA">Product A</th>
-                            <th data-field="productB">Product B</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </li>
-        <li>
-            <div class="collapsible-header active"><i class="material-icons">timeline</i>Convergence of beta coefficients</div>
-            <div class="collapsible-body">
-                <div class="collapsible-container">
-                    <div class="col s6">
-                        <div class="beta-chart a"></div>
-                    </div>
-                    <div class="col s6">
-                        <div class="beta-chart b"></div>
+    <h5>Results</h5>
+    <div class="col s12">
+        <ul class="collapsible" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header"><i class="material-icons">label</i>Computed beta coefficients</div>
+                <div class="collapsible-body">
+                    <div class="collapsible-container">
+                        <table class="beta-table">
+                            <thead>
+                            <tr>
+                                <th data-field="beta">Coefficient</th>
+                                <th data-field="productA">Product A</th>
+                                <th data-field="productB">Product B</th>
+                            </tr>
+                            </thead>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </li>
-    </ul>
+            </li>
+            <li>
+                <div class="collapsible-header active"><i class="material-icons">timeline</i>Convergence of beta coefficients</div>
+                <div class="collapsible-body">
+                    <div class="collapsible-container">
+                        <div class="col s6">
+                            <div class="beta-chart a"></div>
+                        </div>
+                        <div class="col s6">
+                            <div class="beta-chart b"></div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>

@@ -6,15 +6,15 @@ from core.regression import LogisticRegressor
 
 
 class RegressionHandler(tornado.web.RequestHandler):
-    def get(self):
-        # Define constants
-        min_price = 1
-        max_price = 20
-        price_step = 0.1
-        competitor_count = 5
-        min_observations = 20
-        max_observations = 1000
+    # Constants
+    MIN_PRICE = 1
+    MAX_PRICE = 20
+    PRICE_STEP = 0.1
+    COMPETITORS_COUNT = 5
+    MIN_OBSERVATIONS = 20
+    MAX_OBSERVATIONS = 1000
 
+    def get(self):
         # Get sale probability coefficients
         coeff_A_intercept = float(self.get_argument('coeffAIntercept'))
         coeff_A_price_A = float(self.get_argument('coeffAPriceA'))
@@ -33,7 +33,8 @@ class RegressionHandler(tornado.web.RequestHandler):
         coeff_B_rank_B = float(self.get_argument('coeffBRankB'))
 
         # Run regression
-        regressor = LogisticRegressor(min_price, max_price, price_step, competitor_count, max_observations)
+        regressor = LogisticRegressor(self.MIN_PRICE, self.MAX_PRICE, self.PRICE_STEP,
+                                      self.COMPETITORS_COUNT, self.MAX_OBSERVATIONS)
         result = regressor.train_iteratively((coeff_A_intercept, coeff_B_intercept),
                                              (coeff_A_price_A, coeff_B_price_A),
                                              (coeff_A_price_B, coeff_B_price_B),
@@ -41,12 +42,12 @@ class RegressionHandler(tornado.web.RequestHandler):
                                              (coeff_A_min_comp_B, coeff_B_min_comp_B),
                                              (coeff_A_rank_A, coeff_B_rank_A),
                                              (coeff_A_rank_B, coeff_B_rank_B),
-                                             min_observations)
-
+                                             self.MIN_OBSERVATIONS)
+        # Write output
         self.write(json.dumps({
             'meta': {
-                'minObservations': min_observations,
-                'maxObservations': max_observations,
+                'minObservations': self.MIN_OBSERVATIONS,
+                'maxObservations': self.MAX_OBSERVATIONS,
                 'betaCount': min(len(x) for x in result)
             },
             'data': result

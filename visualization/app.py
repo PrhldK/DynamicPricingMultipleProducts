@@ -4,6 +4,7 @@ import tornado.web
 
 from visualization.handlers import MainHandler
 from visualization.handlers.regression import RegressionHandler
+from visualization.handlers.bellman import BellmanHandler
 
 
 def make_app():
@@ -14,6 +15,7 @@ def make_app():
     handlers = [
         (r"/", MainHandler),
         (r"/regression", RegressionHandler),
+        (r"/bellman", BellmanHandler)
     ]
     return tornado.web.Application(handlers, **settings)
 

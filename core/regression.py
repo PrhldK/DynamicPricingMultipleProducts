@@ -1,6 +1,7 @@
 import math
-import numpy as np
 import statsmodels.api as sm
+
+from core.helpers import *
 
 
 class LogisticRegressor:
@@ -11,8 +12,7 @@ class LogisticRegressor:
         self.competitors_count = competitors_count
         self.observations_count = observations_count
 
-        self.prices_ranges = [np.arange(self.min_price, self.max_price + self.price_step, self.price_step)
-                              for i in range(2)]
+        self.price_range = get_price_range(self.min_price, self.max_price, self.price_step)
 
     def train(self, coeff_intercept, coeff_price_A, coeff_price_B,
               coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
@@ -26,7 +26,7 @@ class LogisticRegressor:
         explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in range(2)]
         logits = [sm.Logit(sale_probs[i], explanatory_vars[i].transpose()) for i in range(2)]
 
-        return [logits[i].fit().params.tolist() for i in range(2)]
+        return [logits[i].fit(disp=False).params.tolist() for i in range(2)]
 
     def train_iteratively(self, coeff_intercept, coeff_price_A, coeff_price_B,
                          coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B, min_observations=10):
@@ -50,8 +50,8 @@ class LogisticRegressor:
     def generate_situation(self, coeff_intercept, coeff_price_A, coeff_price_B,
                            coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
         # Generate prices
-        prices = np.array([self.generate_prices(self.prices_ranges[i]) for i in range(2)])
-        competitor_prices = np.array([self.generate_competitor_prices(self.prices_ranges[i]) for i in range(2)])
+        prices = np.array([generate_prices(self.price_range, self.observations_count) for i in range(2)])
+        competitor_prices = generate_competitor_prices(self.price_range, self.competitors_count, self.observations_count)
         ranks = np.array([self.calculate_ranks(prices[i], competitor_prices[i]) for i in range(2)])
 
         # Calculate sale probabilities
@@ -62,13 +62,6 @@ class LogisticRegressor:
                       for i in range(2)]
 
         return sale_probs, ranks, prices, competitor_prices
-
-    def generate_prices(self, prices_range):
-        return np.random.choice(prices_range, self.observations_count)
-
-    def generate_competitor_prices(self, prices_range):
-        return np.array([self.generate_prices(prices_range)
-                         for j in range(self.competitors_count)])
 
     def calculate_ranks(self, prices, competitor_prices):
         return [1 + len([1 for j in range(self.competitors_count) if competitor_prices[j, k] < prices[k]])
