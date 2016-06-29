@@ -7,6 +7,15 @@ from core.regression import LogisticRegressor
 
 class RegressionHandler(tornado.web.RequestHandler):
     def get(self):
+        # Define constants
+        min_price = 1
+        max_price = 20
+        price_step = 0.1
+        competitor_count = 5
+        min_observations = 20
+        max_observations = 1000
+
+        # Get sale probability coefficients
         coeff_A_intercept = float(self.get_argument('coeffAIntercept'))
         coeff_A_price_A = float(self.get_argument('coeffAPriceA'))
         coeff_A_price_B = float(self.get_argument('coeffAPriceB'))
@@ -23,15 +32,24 @@ class RegressionHandler(tornado.web.RequestHandler):
         coeff_B_rank_A = float(self.get_argument('coeffBRankA'))
         coeff_B_rank_B = float(self.get_argument('coeffBRankB'))
 
-        regressor = LogisticRegressor(1, 20, 0.1, 5, 1000)
-        betas = regressor.train_iteratively((coeff_A_intercept, coeff_B_intercept),
-                                            (coeff_A_price_A, coeff_B_price_A),
-                                            (coeff_A_price_B, coeff_B_price_B),
-                                            (coeff_A_min_comp_A, coeff_B_min_comp_A),
-                                            (coeff_A_min_comp_B, coeff_B_min_comp_B),
-                                            (coeff_A_rank_A, coeff_B_rank_A),
-                                            (coeff_A_rank_B, coeff_B_rank_B))
+        # Run regression
+        regressor = LogisticRegressor(min_price, max_price, price_step, competitor_count, max_observations)
+        result = regressor.train_iteratively((coeff_A_intercept, coeff_B_intercept),
+                                             (coeff_A_price_A, coeff_B_price_A),
+                                             (coeff_A_price_B, coeff_B_price_B),
+                                             (coeff_A_min_comp_A, coeff_B_min_comp_A),
+                                             (coeff_A_min_comp_B, coeff_B_min_comp_B),
+                                             (coeff_A_rank_A, coeff_B_rank_A),
+                                             (coeff_A_rank_B, coeff_B_rank_B),
+                                             min_observations)
 
-        self.write(json.dumps(betas))
+        self.write(json.dumps({
+            'meta': {
+                'minObservations': min_observations,
+                'maxObservations': max_observations,
+                'betaCount': min(len(x) for x in result)
+            },
+            'data': result
+        }))
 
 
