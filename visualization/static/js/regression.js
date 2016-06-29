@@ -5,31 +5,42 @@ $(document).ready(function() {
         $('.regression-preloader').removeClass('hide');
         $('.result-container').addClass('hide');
 
-        $.getJSON('/regression', {
-            coeffAIntercept: $('#coeffAIntercept').val(),
-            coeffAPriceA: $('#coeffAPriceA').val(),
-            coeffAPriceB: $('#coeffAPriceB').val(),
-            coeffAMinCompA: $('#coeffAMinCompA').val(),
-            coeffAMinCompB: $('#coeffAMinCompB').val(),
-            coeffARankA: $('#coeffARankA').val(),
-            coeffARankB: $('#coeffARankB').val(),
+        $.ajax({
+            type: 'GET',
+            url: '/regression',
+            data: {
+                coeffAIntercept: $('#coeffAIntercept').val(),
+                coeffAPriceA: $('#coeffAPriceA').val(),
+                coeffAPriceB: $('#coeffAPriceB').val(),
+                coeffAMinCompA: $('#coeffAMinCompA').val(),
+                coeffAMinCompB: $('#coeffAMinCompB').val(),
+                coeffARankA: $('#coeffARankA').val(),
+                coeffARankB: $('#coeffARankB').val(),
 
-            coeffBIntercept: $('#coeffBIntercept').val(),
-            coeffBPriceA: $('#coeffBPriceA').val(),
-            coeffBPriceB: $('#coeffBPriceB').val(),
-            coeffBMinCompA: $('#coeffBMinCompA').val(),
-            coeffBMinCompB: $('#coeffBMinCompB').val(),
-            coeffBRankA: $('#coeffBRankA').val(),
-            coeffBRankB: $('#coeffBRankB').val()
-        }, function(res) {
-            // Show results
-            fillResultTable(res.meta.betaCount, res.meta.maxObservations, res.data);
-            renderCharts(res.meta.minObservations, res.meta.maxObservations, res.data);
+                coeffBIntercept: $('#coeffBIntercept').val(),
+                coeffBPriceA: $('#coeffBPriceA').val(),
+                coeffBPriceB: $('#coeffBPriceB').val(),
+                coeffBMinCompA: $('#coeffBMinCompA').val(),
+                coeffBMinCompB: $('#coeffBMinCompB').val(),
+                coeffBRankA: $('#coeffBRankA').val(),
+                coeffBRankB: $('#coeffBRankB').val()
+            },
+            dataType: 'json',
+            success: function(res) {
+                // Show results
+                fillResultTable(res.meta.betaCount, res.meta.maxObservations, res.data);
 
-            // Hide loading indicators
-            $('#btnStartRegression').removeClass('disabled');
-            $('.regression-preloader').addClass('hide');
-            $('.result-container').removeClass('hide');
+                renderChart($('#betaAChart'), 'Beta Coefficients Product A',
+                            res.meta.minObservations , res.meta.maxObservations, res.data[0]);
+                renderChart($('#betaBChart'), 'Beta Coefficients Product B',
+                            res.meta.minObservations , res.meta.maxObservations, res.data[1]);
+            },
+            complete: function() {
+                // Hide loading indicators
+                $('#btnStartRegression').removeClass('disabled');
+                $('.regression-preloader').addClass('hide');
+                $('.result-container').removeClass('hide');
+            }
         });
     });
 
@@ -59,28 +70,44 @@ $(document).ready(function() {
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'betaResults']);
     }
 
-    function renderCharts(minObservations, maxObservations, data) {
-        var options = {
-            showPoint: false,
-            lineSmooth: false,
-            axisX: {
-                showGrid: false,
-                labelInterpolationFnc: function(value, index) {
-                    return index % 100  === 0 ? value : null;
-                }
-            },
-            axisY: {
-                showGrid: false
-            }
-        };
+    function renderChart(container, title, minObservations, maxObservations, data) {
+        var colors = ['#f44336', '#3f51b5', '#009688', '#ff9800', '#9c27b0'];
 
-        new Chartist.Line('#betaAChart', {
-            labels: _.range(minObservations, maxObservations),
-            series: data[0]
-        }, options);
-        new Chartist.Line('#betaBChart', {
-            labels: _.range(minObservations, maxObservations),
-            series: data[1]
-        }, options);
+        var series = data.map(function(value, index) {
+            return {
+                name: 'Beta ' + index,
+                data: value,
+                lineWidth: 1,
+                color: colors[index]
+            };
+        });
+
+        container.highcharts({
+            title: {
+                text: title
+            },
+            xAxis: {
+                title: {
+                    text: 'Observations'
+                },
+                categories: _.range(minObservations, maxObservations + 1),
+                tickInterval: 100
+            },
+            yAxis: {
+                min: -2,
+                max: 2
+            },
+            series: series
+        });
+    }
+});
+
+
+// Global Highcharts Configuration
+Highcharts.setOptions({
+    chart: {
+        style: {
+            fontFamily: 'Roboto'
+        }
     }
 });
