@@ -13,13 +13,14 @@ class BellmanCalculator:
         self.betas = betas
         self.delta = delta
 
-        self.competitors_count_range = range(self.competitors_count)
+        self.products = range(2)
+        self.competitors = range(self.competitors_count)
         self.price_range = get_price_range(self.min_price, self.max_price, self.price_step)
         self.price_indices = {price: int(price / self.price_step - self.min_price / self.price_step)
                               for price in self.price_range}
 
     def calculate(self, competitor_prices):
-        explanatory_vars = [self.get_explanatory_vars(i, competitor_prices) for i in range(2)]
+        explanatory_vars = [self.get_explanatory_vars(i, competitor_prices) for i in self.products]
         sale_probs = self.calculate_sale_probs(self.betas, explanatory_vars)
 
         return self.bellman(sale_probs)
@@ -36,7 +37,7 @@ class BellmanCalculator:
 
         explanatory_1 = np.array([[1] * len(self.price_range)] * len(self.price_range))
 
-        explanatory_2 = np.array([[1 + len([1 for j in self.competitors_count_range
+        explanatory_2 = np.array([[1 + len([1 for j in self.competitors
                                             if competitor_prices[product_index, j] < current_price(price_A, price_B)])
                                    for price_B in self.price_range] for price_A in self.price_range])
 
@@ -53,7 +54,7 @@ class BellmanCalculator:
 
     def calculate_sale_probs(self, beta, explanatory_vars):
         sale_probs = np.empty(shape=(2, 2, len(self.price_range), len(self.price_range)))
-        for i in range(2):
+        for i in self.products:
             for price_A in self.price_range:
                 for price_B in self.price_range:
                     L = sum([beta[i][l] * explanatory_vars[i][l, self.price_indices[price_A], self.price_indices[price_B]]
@@ -67,9 +68,9 @@ class BellmanCalculator:
     def bellman(self, sale_probs):
         bellman_results = np.empty(shape=(len(self.price_range), len(self.price_range)))
         for prices in itertools.product(self.price_range, repeat=2):
-            result = 1 / (1 - self.delta) * sum(sum(sale_probs[k, j, self.price_indices[prices[0]], self.price_indices[prices[1]]] * k * prices[j]
-                                                    for k in range(2))
-                                                for j in range(2))
+            result = 1 / (1 - self.delta) * sum(sum(sale_probs[e, i, self.price_indices[prices[0]], self.price_indices[prices[1]]] * e * prices[i]
+                                                    for e in range(2))
+                                                for i in self.products)
             bellman_results[self.price_indices[prices[0]], self.price_indices[prices[1]]] = result
 
         argmax = np.unravel_index(bellman_results.argmax(), bellman_results.shape)
