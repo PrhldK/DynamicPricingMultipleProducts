@@ -1,5 +1,6 @@
 import math
-import statsmodels.api as sm
+
+from sklearn.linear_model import LogisticRegression
 
 from core.helpers import *
 
@@ -27,9 +28,10 @@ class LogisticRegressor:
 
         # Run regression
         explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in self.products]
-        logits = [sm.Logit(sale_probs[i], explanatory_vars[i].transpose()) for i in self.products]
+        models = [LogisticRegression(fit_intercept=False).fit(explanatory_vars[i].transpose(), sale_probs[i])
+                  for i in self.products]
 
-        return [logits[i].fit(disp=False).params.tolist() for i in self.products]
+        return [model.coef_[0].tolist() for model in models]
 
     def train_iteratively(self, coeff_intercept, coeff_price_A, coeff_price_B,
                          coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B, min_observations=10):
@@ -43,10 +45,10 @@ class LogisticRegressor:
         explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in self.products]
         betas = np.empty(shape=(2, self.observations_count, len(explanatory_vars[0])))
         for k in range(min_observations, self.observations_count):
-            logits = [sm.Logit(sale_probs[i][:(k + 1)], explanatory_vars[i].transpose()[:(k + 1)]) for i in self.products]
+            models = [LogisticRegression(fit_intercept=False).fit(explanatory_vars[i].transpose()[:(k + 1)], sale_probs[i][:(k + 1)])
+                      for i in self.products]
             for i in self.products:
-                result = logits[i].fit(disp=False).params.tolist()
-                betas[i, k] = result
+                betas[i, k] = models[i].coef_[0].tolist()
 
         return np.swapaxes(betas, 1, 2).tolist()
 
