@@ -28,7 +28,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(res) {
                 // Show results
-                fillResultTable(res.meta.betaCount, res.meta.maxObservations, res.data);
+                fillResultTable(res.meta.betaCount, res.meta.minObservations, res.meta.maxObservations, res.data);
 
                 renderChart($('.beta-chart.a'), 'Beta Coefficients Product A',
                             res.meta.minObservations , res.meta.maxObservations, res.data[0]);
@@ -44,7 +44,7 @@ $(document).ready(function() {
         });
     });
 
-    function fillResultTable(betaCount, maxObservations, data) {
+    function fillResultTable(betaCount, minObservations, maxObservations, data) {
         // Remove existing beta rows
         $(".beta-table > tr").remove();
 
@@ -58,7 +58,7 @@ $(document).ready(function() {
             // Add betas for each product to row
             for(var i = 0; i < data.length; i++) {
                 $('<td />')
-                    .text(Math.round(data[i][j][maxObservations - 1] * 10000) / 10000)
+                    .text(data[i][j][maxObservations - minObservations].toFixed(4))
                     .appendTo(row);
             }
 
