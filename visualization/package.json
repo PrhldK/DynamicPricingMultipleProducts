@@ -1,0 +1,23 @@
+{
+  "name": "dynamic_pricing_demo",
+  "version": "1.0.0",
+  "description": "Demo application for Dynamic Pricing seminar to show the effect of multiple, substituting products on dynamic prices.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosabraatz/DynamicPricingMultipleProducts.git"
+  },
+  "author": "Rosa Braatz, Dominic Sauer, Henriette Dinger, Sören Oldag",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rosabraatz/DynamicPricingMultipleProducts/issues"
+  },
+  "homepage": "https://github.com/rosabraatz/DynamicPricingMultipleProducts#readme",
+  "dependencies": {
+    "highcharts": "^4.2.5",
+    "jquery": "^3.0.0",
+    "material-design-icons": "^2.2.3",
+    "materialize-css": "^0.97.6",
+    "mathjax": "^2.6.1",
+    "underscore": "^1.8.3"
+  }
+}

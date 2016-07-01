@@ -5,19 +5,21 @@
         <title>Dynamic Pricing</title>
 
         <!-- jQuery -->
-        <script type="text/javascript" src="{{ static_url('js/jquery/jquery-3.0.0.min.js') }}"></script>
+        <script type="text/javascript" src="{{ vendor_url('jquery/dist/jquery.min.js') }}"></script>
 
         <!-- Underscore.js -->
-        <script type="text/javascript" src="{{ static_url('js/underscore/underscore-min.js') }}"></script>
+        <script type="text/javascript" src="{{ vendor_url('underscore/underscore-min.js') }}"></script>
 
-        <!-- Materialize-->
-        <script type="text/javascript" src="{{ static_url('js/materialize/materialize.min.js') }}"></script>
-        <link type="text/css" rel="stylesheet" href="{{ static_url('css/material-icons.css') }}" />
-        <link type="text/css" rel="stylesheet" href="{{ static_url('css/materialize.min.css') }}" media="screen,projection" />
+        <!-- Materialize -->
+        <script type="text/javascript" src="{{ vendor_url('materialize-css/dist/js/materialize.min.js') }}"></script>
+        <link type="text/css" rel="stylesheet" href="{{ vendor_url('materialize-css/dist/css/materialize.min.css') }}" media="screen,projection" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+        <!-- Material Icons -->
+        <link type="text/css" rel="stylesheet" href="{{ vendor_url('material-design-icons/iconfont/material-icons.css') }}" />
+
         <!-- Highcharts -->
-        <script type="text/javascript" src="{{ static_url('js/highcharts/highcharts.js') }}"></script>
+        <script type="text/javascript" src="{{ vendor_url('highcharts/highcharts.js') }}"></script>
 
         <!-- MathJax -->
         <script type="text/x-mathjax-config">
@@ -34,7 +36,7 @@
                 SVG: { linebreaks: { automatic: true } }
             });
         </script>
-        <script type="text/javascript" async src="{{ static_url('js/mathjax/MathJax.js') }}&config=TeX-MML-AM_CHTML"></script>
+        <script type="text/javascript" async src="{{ vendor_url('mathjax/MathJax.js') }}?config=TeX-MML-AM_CHTML"></script>
 
         <!-- Custom JS -->
         <script type="text/javascript" src="{{ static_url('js/regression.js') }}"></script>
