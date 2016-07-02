@@ -1,5 +1,12 @@
-#game-container .comp-input{
+#game-container #competitorCount {
     width: 50px !important;
     text-align: right;
     margin-right: 20px !important;
+}
+
+#game-container .game-preloader {
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
+    vertical-align: middle;
 }

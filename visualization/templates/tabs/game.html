@@ -1,60 +1,64 @@
 <div class="col s12">
-    <div class="col s12">
+    <div class="col s6">
         <h5>Situation Generation</h5>
-        <div class="col s6">
-            <label for="competitorCount">Number of Competitors:</label>
-            <input id="competitorCount" class="comp-input" type="number" min="1" max="10">
-            <a class="waves-effect waves-light btn" id="btnStartCalcSituationGame"><i class="material-icons left">euro_symbol</i>Generate</a>
+        <label for="competitorCount">Number of Competitors:</label>
+        <input id="competitorCount" type="number" min="1" max="10" value="1" />
+        <a class="waves-effect waves-light btn" id="btnGenerateSituation"><i class="material-icons left">euro_symbol</i>Generate</a>
+        <div class="game-preloader preloader-wrapper active hide">
+            <div class="spinner-layer spinner-red-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
         </div>
-        <div class="col s6">
-            <table id="compPrices">
-                <thead>
-                <tr>
-                    <th data-field="competitor">Competitor</th>
-                    <th data-field="pricesProductA">Price Product A</th>
-                    <th data-field="pricesProductB">Price Product B</th>
-                </tr>
-                </thead>
-            </table>
-        </div>
+
+        <table class="competitor-price-table hide">
+            <thead>
+            <tr>
+                <th data-field="competitor">Competitor</th>
+                <th data-field="pricesProductA">Price Product A</th>
+                <th data-field="pricesProductB">Price Product B</th>
+            </tr>
+            </thead>
+        </table>
     </div>
 
 
-    <div class="col s12">
+    <div class="col s6">
         <h5>Price Combination Check</h5>
-        <div class="col s6">
-            <div class="input-field col s4">
-                <input id="gamePriceA" type="text" class="validate">
-                <label for="gamePriceA">Price for Product A</label>
-            </div>
-
-
-            <div class="input-field col s4">
-                <input id="gamePriceB" type="text" class="validate">
-                <label for="gamePriceB">Price for Product B</label>
-            </div>
-
-            <div class="col s4">
-                <a class="btn waves-effect waves-light" style="margin-top: 25px;" id="btnCheckPricesGame"><i class="material-icons right">send</i>Check</a>
-            </div>
+        <div class="input-field col s4">
+            <label for="gamePriceA">Price for Product A</label>
+            <input id="gamePriceA" class="game-price-input a" type="text" class="validate" disabled />
         </div>
 
-        <div class="col s6">
-            <div class="hide col s12" id="gameSuccessCheck col s12">
-                Congratulations! You found the best price combination! :)
-            </div>
 
-            <div class="hide col s12" id="gameFailCheck">
-                Oooohhh, you didn't find the best price combination. :(
-                <a class="btn waves-effect waves-light" style="margin-left: 20px;" id="btnSolveGame"><i class="material-icons right">send</i>Solve</a>
-            </div>
+        <div class="input-field col s4">
+            <label for="gamePriceB">Price for Product B</label>
+            <input id="gamePriceB" class="game-price-input b" type="text" class="validate" disabled />
+        </div>
 
-            <div class="hide col s12" id="gameSolutionCheck">
-                The best price combination is
-                <span id="gameSolutionPriceA"></span>
-                for price A and
-                <span id="gameSolutionPriceB"></span> for price B.
-            </div>
+        <div class="col s4">
+            <a class="btn waves-effect waves-light disabled" style="margin-top: 25px;" id="btnCheckPrices"><i class="material-icons right">send</i>Check</a>
+        </div>
+        <div class="hide col s12 game-result success">
+            Congratulations! You found the best price combination! :)
+        </div>
+
+        <div class="hide col s12 game-result fail">
+            Oooohhh, you didn't find the best price combination. :(
+            <a class="btn waves-effect waves-light" style="margin-left: 20px;" id="btnSolveGame"><i class="material-icons right">send</i>Solve</a>
+        </div>
+
+        <div class="hide col s12 game-result solution">
+            The best price combination is
+            <span class="optimal-price a"></span>€ for price A and
+            <span class="optimal-price b"></span>€ for price B.
         </div>
     </div>
 </div>
