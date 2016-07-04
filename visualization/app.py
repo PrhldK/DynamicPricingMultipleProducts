@@ -21,17 +21,20 @@ def make_app():
         }
     )
 
+    vendor_path = os.path.join(os.path.dirname(__file__), VENDOR_DIRECTORY_PATH)
     handlers = [
         (r'/', MainHandler),
         (r'/regression', RegressionHandler),
         (r'/bellman', BellmanHandler),
-        (r'/%s/(.*)' % VENDOR_URL_PATH, tornado.web.StaticFileHandler, {'path': VENDOR_DIRECTORY_PATH})
+        (r'/%s/(.*)' % VENDOR_URL_PATH, tornado.web.StaticFileHandler, {'path': vendor_path})
     ]
 
     return tornado.web.Application(handlers, **settings)
 
 
-if __name__ == '__main__':
+def start_server():
+    print(__file__)
     app = make_app()
     app.listen(8080)
     tornado.ioloop.IOLoop.current().start()
+
