@@ -19,7 +19,7 @@ class BellmanCalculator:
         self.price_indices = {price: int(price / self.price_step - self.min_price / self.price_step)
                               for price in self.price_range}
 
-        self.explanatory_vars = [self.build_explanatory_vars(i, initial_competitor_prices) for i in self.products]
+        self.explanatory_vars = [self.build_explanatory_vars(i, np.array(initial_competitor_prices)) for i in self.products]
 
     def calculate(self):
         sale_probs = self.calculate_sale_probs(self.betas, self.explanatory_vars)

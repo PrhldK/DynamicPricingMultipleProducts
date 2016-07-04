@@ -7,6 +7,7 @@ from visualization.handlers import MainHandler
 from visualization.handlers.regression import RegressionHandler
 from visualization.handlers.bellman import BellmanHandler
 from visualization.handlers.simulation import SimulationHandler
+from visualization.handlers.competitors import CompetitorHandler
 
 
 VENDOR_URL_PATH = 'vendor'
@@ -28,6 +29,7 @@ def make_app():
         (r'/regression', RegressionHandler),
         (r'/bellman', BellmanHandler),
         (r'/simulation', SimulationHandler),
+        (r'/competitors', CompetitorHandler),
         (r'/%s/(.*)' % VENDOR_URL_PATH, tornado.web.StaticFileHandler, {'path': vendor_path})
     ]
 
@@ -35,7 +37,6 @@ def make_app():
 
 
 def start_server():
-    print(__file__)
     app = make_app()
     app.listen(8080)
     tornado.ioloop.IOLoop.current().start()

@@ -1,8 +1,9 @@
 $(document).ready(function() {
-    var rawValues, optimalPrices;
-
     $('#btnGenerateSituation-simulation').click(function() {
         var competitorCount = $('#competitorCount-simulation').val();
+        var simulationSteps = $('#simulationLength-simulation').val();
+        var minPrice = $('#priceRangeBegin-simulation').val();
+        var maxPrice = $('#priceRangeEnd-simulation').val();
 
         // Show preloader and hide results
         $('#btnGenerateSituation-simulation').addClass('disabled');
@@ -11,16 +12,14 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'GET',
-            url: '/bellman',
+            url: '/competitors',
             data: {
+                minPrice: minPrice,
+                maxPrice: maxPrice,
                 competitorsCount: competitorCount
             },
             dataType: 'json',
             success: function(res) {
-                // Set solution globally
-                rawValues = res.rawValues;
-                optimalPrices = res.optimalPrices;
-
                 // Fill and show competitor price table
                 fillCompetitorTable(res.competitorPrices, competitorCount);
                 $('#competitor-price-table--simulation').removeClass('hide');
@@ -53,7 +52,7 @@ $(document).ready(function() {
             for(var i = 0; i < competitorPrices.length; i++) {
               var input = document.createElement("input");
               input.type = "number";
-              input.className = "-small"
+              input.className = "-small";
               input.value = competitorPrices[i][j].toFixed(2);
               $('<td />').append(input)
                   .appendTo(row);

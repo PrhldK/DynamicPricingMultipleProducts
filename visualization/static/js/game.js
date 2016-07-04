@@ -2,7 +2,7 @@ $(document).ready(function() {
     var rawValues, optimalPrices;
 
     $('#btnGenerateSituation').click(function() {
-        var competitorCount = $('#competitorCount').val();
+        var competitorsCount = $('#competitorsCount').val();
 
         // Reset game
         $('#gamePriceA').val('');
@@ -18,29 +18,49 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'GET',
-            url: '/bellman',
+            url: '/competitors',
             data: {
-                competitorsCount: competitorCount
+                competitorsCount: competitorsCount
             },
             dataType: 'json',
             success: function(res) {
-                // Set solution globally
-                rawValues = res.rawValues;
-                optimalPrices = res.optimalPrices;
+                // Store situation globally
+                var minPrice = res.minPrice;
+                var maxPrice = res.maxPrice;
+                var priceStep = res.priceStep;
+                var competitorPrices = res.competitorPrices;
 
                 // Fill and show competitor price table
-                fillCompetitorTable(res.competitorPrices, competitorCount);
+                fillCompetitorTable(competitorPrices, competitorsCount);
                 $('.competitor-price-table').removeClass('hide');
 
-                // Enable game inputs
-                $('.game-price-input').prop('disabled', false);
-                $('#btnCheckPrices').removeClass('disabled');
-            },
-            complete: function() {
-                // Hide loading indicators
-                $('#btnGenerateSituation').removeClass('disabled');
-                $('.game-preloader').addClass('hide');
-                $('.competitor-price-table').removeClass('hide');
+                // Request optimal prices for generated competitor prices
+                $.ajax({
+                    type: 'GET',
+                    url: '/bellman',
+                    data: {
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        priceStep: priceStep,
+                        competitorPrices: JSON.stringify(competitorPrices)
+                    },
+                    dataType: 'json',
+                    success: function(res) {
+                        // Store results globally
+                        rawValues = res.rawValues;
+                        optimalPrices = res.optimalPrices;
+
+                        // Enable game inputs
+                        $('.game-price-input').prop('disabled', false);
+                        $('#btnCheckPrices').removeClass('disabled');
+                    },
+                    complete: function() {
+                        // Hide loading indicators
+                        $('#btnGenerateSituation').removeClass('disabled');
+                        $('.game-preloader').addClass('hide');
+                        $('.competitor-price-table').removeClass('hide');
+                    }
+                });
             }
         });
     });
