@@ -11,7 +11,7 @@ class BellmanHandler(tornado.web.RequestHandler):
     # Constants
     MIN_PRICE = 1
     MAX_PRICE = 20
-    PRICE_STEP = 0.1
+    PRICE_STEP = 0.5
     DELTA = 0.99
     OBSERVATIONS = 1000
 
@@ -26,12 +26,12 @@ class BellmanHandler(tornado.web.RequestHandler):
         # Run regression
         regressor = LogisticRegressor(self.MIN_PRICE, self.MAX_PRICE, self.PRICE_STEP,
                                       competitors_count, self.OBSERVATIONS)
-        betas = regressor.train((1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1))  # TODO better coefficients
+        betas = regressor.train()
 
         # Compute bellman
-        bellman_calculator = BellmanCalculator(self.MIN_PRICE, self.MAX_PRICE, self.PRICE_STEP,
+        bellman_calculator = BellmanCalculator(self.MIN_PRICE, self.MAX_PRICE, self.PRICE_STEP, competitor_prices,
                                                competitors_count, betas, self.DELTA)
-        opt_prices, bellman_results = bellman_calculator.calculate(competitor_prices)
+        sale_probs, opt_prices, bellman_results = bellman_calculator.calculate()
 
         # Write result
         self.write(json.dumps({

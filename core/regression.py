@@ -18,8 +18,7 @@ class LogisticRegressor:
         self.observations = range(self.observations_count)
         self.price_range = get_price_range(self.min_price, self.max_price, self.price_step)
 
-    def train(self, coeff_intercept, coeff_price_A, coeff_price_B,
-              coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
+    def train(self):
         # Calculate sale probabilities
         sale_probs, ranks, prices, competitor_prices = self.generate_situation_default()
 

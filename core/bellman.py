@@ -5,7 +5,7 @@ from core.helpers import *
 
 
 class BellmanCalculator:
-    def __init__(self, min_price, max_price, price_step, competitors_count, betas, delta):
+    def __init__(self, min_price, max_price, price_step, initial_competitor_prices, competitors_count, betas, delta):
         self.min_price = min_price
         self.max_price = max_price
         self.price_step = price_step
@@ -19,13 +19,18 @@ class BellmanCalculator:
         self.price_indices = {price: int(price / self.price_step - self.min_price / self.price_step)
                               for price in self.price_range}
 
-    def calculate(self, competitor_prices):
-        explanatory_vars = [self.get_explanatory_vars(i, competitor_prices) for i in self.products]
-        sale_probs = self.calculate_sale_probs(self.betas, explanatory_vars)
+        self.explanatory_vars = [self.build_explanatory_vars(i, initial_competitor_prices) for i in self.products]
 
-        return self.bellman(sale_probs)
+    def calculate(self):
+        sale_probs = self.calculate_sale_probs(self.betas, self.explanatory_vars)
+        opt_prices, bellman_results = self.bellman(sale_probs)
+        return sale_probs, opt_prices, bellman_results
 
-    def get_explanatory_vars(self, product_index, competitor_prices):
+    def recalculate(self, competitor_prices):
+        self.update_explanatory_vars(competitor_prices)
+        return self.calculate()
+
+    def build_explanatory_vars(self, product_index, competitor_prices):
         def price(price_A, price_B, index):
             return (price_A, price_B)[index]
 
@@ -33,7 +38,7 @@ class BellmanCalculator:
             return price(price_A, price_B, product_index)
 
         def other_price(price_A, price_B):
-            return price(price_A, price_B, product_index % 2)
+            return price(price_A, price_B, (product_index + 1) % 2)
 
         explanatory_1 = np.array([[1] * len(self.price_range)] * len(self.price_range))
 
@@ -51,6 +56,17 @@ class BellmanCalculator:
                                    for price_B in self.price_range] for price_A in self.price_range])
 
         return np.array([explanatory_1, explanatory_2, explanatory_3, explanatory_4, explanatory_5])
+
+    def update_explanatory_vars(self, competitor_prices):
+        for i in self.products:
+            def current_price(price_A, price_B):
+                return (price_A, price_B)[i]
+
+            self.explanatory_vars[i][1] = np.array([[1 + len([1 for j in self.competitors if competitor_prices[i, j] < current_price(price_A, price_B)])
+                                                     for price_B in self.price_range] for price_A in self.price_range])
+
+            self.explanatory_vars[i][2] = np.array([[current_price(price_A, price_B) - competitor_prices.min()
+                                                     for price_B in self.price_range] for price_A in self.price_range])
 
     def calculate_sale_probs(self, beta, explanatory_vars):
         sale_probs = np.empty(shape=(2, 2, len(self.price_range), len(self.price_range)))
