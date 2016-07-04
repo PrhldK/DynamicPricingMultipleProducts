@@ -30,6 +30,7 @@ $(document).ready(function() {
                 $('#btnGenerateSituation-simulation').removeClass('disabled');
                 $('.simulation-preloader').addClass('hide');
                 $('#competitor-price-table--simulation').removeClass('hide');
+                $('#btnSimulate-simulation').removeClass('hide');
             }
         });
     });
