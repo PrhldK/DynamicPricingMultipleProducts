@@ -21,10 +21,7 @@ class LogisticRegressor:
     def train(self, coeff_intercept, coeff_price_A, coeff_price_B,
               coeff_min_comp_A, coeff_min_comp_B, coeff_rank_A, coeff_rank_B):
         # Calculate sale probabilities
-        sale_probs, ranks, prices, competitor_prices = self.generate_situation(coeff_intercept,
-                                                                               coeff_price_A, coeff_price_B,
-                                                                               coeff_min_comp_A, coeff_min_comp_B,
-                                                                               coeff_rank_A, coeff_rank_B)
+        sale_probs, ranks, prices, competitor_prices = self.generate_situation_default()
 
         # Run regression
         explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in self.products]
@@ -72,6 +69,18 @@ class LogisticRegressor:
 
         return sale_probs, ranks, prices, competitor_prices
 
+    def generate_situation_default(self):
+        # Generate prices
+        prices = np.array([generate_prices(self.price_range, self.observations_count) for i in self.products])
+        competitor_prices = generate_competitor_prices(self.price_range, self.competitors_count, self.observations_count)
+        ranks = np.array([self.calculate_ranks(prices[i], competitor_prices[i]) for i in self.products])
+
+        # Calculate sale probabilities
+        sale_probs = [self.calculate_sale_probs_default_A(prices, ranks),
+                      self.calculate_sale_probs_default_B(prices, ranks)]
+
+        return sale_probs, ranks, prices, competitor_prices
+
     def calculate_ranks(self, prices, competitor_prices):
         return [1 + len([1 for j in self.competitors if competitor_prices[j, k] < prices[k]])
                 for k in self.observations]
@@ -87,6 +96,20 @@ class LogisticRegressor:
                              coeff_rank_B * ranks[1, i]
 
         return [max(0, round(np.random.uniform(0, min(1, max_prob(i))))) for i in self.observations]
+
+    def calculate_sale_probs_default_A(self, prices, ranks):
+        max_prob = lambda i: 1 - ((0.3 * ranks[0, i]) / (self.competitors_count + 1)) - \
+                             0.05 * prices[0, i] + \
+                             (-0.0125 * (prices[0, i] - prices[1, i]) + 0.25)
+
+        return [max(0, round(np.random.uniform(0, max_prob(i)))) for i in self.observations]
+
+    def calculate_sale_probs_default_B(self, prices, ranks):
+        max_prob = lambda i: 1 - ((0.3 * ranks[1, i]) / (self.competitors_count + 1)) - \
+                             0.05 * prices[1, i] + \
+                             (0.0125 * (prices[0, i] - prices[1, i]) + 0.25)
+
+        return [max(0, round(np.random.uniform(0, max_prob(i)))) for i in self.observations]
 
     def get_explanatory_vars(self, product, ranks, prices, competitor_prices):
         explanatory_1 = [1] * self.observations_count
