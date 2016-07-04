@@ -1,0 +1,46 @@
+<div class="col s12">
+    <div class="col s6">
+        <h5>Situation Generation</h5>
+        <div>
+          <label for="competitorCount-simulation">Number of Competitors:</label>
+          <input id="competitorCount-simulation" class="-small" type="number" min="1" max="10" value="1" />
+        </div>
+
+        <div>
+          <label for="simulationLength-simulation">Simulation Steps:</label>
+          <input id="simulationLength-simulation" class="-small" type="number" min="1" max="1000" value="1" />
+        </div>
+
+        <div>
+          <label for="priceRangeBegin-simulation">Price Range</label>
+          <input id="priceRangeBegin-simulation" class="-small" type="number" min="1" max="99" value="1" />
+          <label for="priceRangeBegin-simulation">-</label>
+          <input id="priceRangeEnd-simulation" class="-small" type="number" min="2" max="100" value="1" />
+        </div>
+
+        <a class="waves-effect waves-light btn" id="btnGenerateSituation-simulation">Generate</a>
+        <div class="simulation-preloader preloader preloader-wrapper active hide">
+            <div class="spinner-layer spinner-red-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+
+        <table id="competitor-price-table--simulation" class="hide">
+            <thead>
+            <tr>
+                <th data-field="competitor">Competitor</th>
+                <th data-field="pricesProductA">Price Product A</th>
+                <th data-field="pricesProductB">Price Product B</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
