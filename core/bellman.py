@@ -5,21 +5,20 @@ from core.helpers import *
 
 
 class BellmanCalculator:
-    def __init__(self, min_price, max_price, price_step, initial_competitor_prices, competitors_count, betas, delta):
+    def __init__(self, min_price, max_price, price_step, initial_competitor_prices, betas, delta):
         self.min_price = min_price
         self.max_price = max_price
         self.price_step = price_step
-        self.competitors_count = competitors_count
         self.betas = betas
         self.delta = delta
 
         self.products = range(2)
-        self.competitors = range(self.competitors_count)
+        self.competitors = range(len(initial_competitor_prices))
         self.price_range = get_price_range(self.min_price, self.max_price, self.price_step)
-        self.price_indices = {price: int(price / self.price_step - self.min_price / self.price_step)
-                              for price in self.price_range}
+        self.price_indices = get_price_indices(self.min_price, self.max_price, self.price_step)
 
-        self.explanatory_vars = [self.build_explanatory_vars(i, np.array(initial_competitor_prices)) for i in self.products]
+        self.explanatory_vars = [self.build_explanatory_vars(i, np.array(initial_competitor_prices))
+                                 for i in self.products]
 
     def calculate(self):
         sale_probs = self.calculate_sale_probs(self.betas, self.explanatory_vars)
@@ -43,7 +42,7 @@ class BellmanCalculator:
         explanatory_1 = np.array([[1] * len(self.price_range)] * len(self.price_range))
 
         explanatory_2 = np.array([[1 + len([1 for j in self.competitors
-                                            if competitor_prices[product_index, j] < current_price(price_A, price_B)])
+                                            if competitor_prices[j, product_index] < current_price(price_A, price_B)])
                                    for price_B in self.price_range] for price_A in self.price_range])
 
         explanatory_3 = np.array([[current_price(price_A, price_B) - competitor_prices.min()
@@ -62,7 +61,7 @@ class BellmanCalculator:
             def current_price(price_A, price_B):
                 return (price_A, price_B)[i]
 
-            self.explanatory_vars[i][1] = np.array([[1 + len([1 for j in self.competitors if competitor_prices[i, j] < current_price(price_A, price_B)])
+            self.explanatory_vars[i][1] = np.array([[1 + len([1 for j in self.competitors if competitor_prices[j, i] < current_price(price_A, price_B)])
                                                      for price_B in self.price_range] for price_A in self.price_range])
 
             self.explanatory_vars[i][2] = np.array([[current_price(price_A, price_B) - competitor_prices.min()

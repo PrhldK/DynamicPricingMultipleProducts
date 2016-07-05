@@ -3,6 +3,7 @@ import json
 import tornado.web
 
 from core.regression import LogisticRegressor
+from core.sales import SalesGeneratorFactory
 
 
 class RegressionHandler(tornado.web.RequestHandler):
@@ -31,16 +32,22 @@ class RegressionHandler(tornado.web.RequestHandler):
         coeff_B_rank_A = float(self.get_argument('coeffBRankA'))
         coeff_B_rank_B = float(self.get_argument('coeffBRankB'))
 
+        # Pack coefficients
+        coefficients = [
+            [coeff_A_intercept, coeff_A_price_A, coeff_A_price_B,
+             coeff_A_min_comp_A, coeff_A_min_comp_B, coeff_A_rank_A, coeff_A_rank_B],
+            [coeff_B_intercept, coeff_B_price_A, coeff_B_price_B,
+             coeff_B_min_comp_A, coeff_B_min_comp_B, coeff_B_rank_A, coeff_B_rank_B]
+        ]
+
+        # Create sale generator
+        sales_generator_factory = SalesGeneratorFactory(self.MIN_PRICE, self.MAX_PRICE,
+                                                       self.PRICE_STEP, self.COMPETITORS_COUNT)
+        sales_generator = sales_generator_factory.create_extended()
+
         # Run regression
-        regressor = LogisticRegressor(self.MIN_PRICE, self.MAX_PRICE, self.PRICE_STEP,
-                                      self.COMPETITORS_COUNT, self.OBSERVATIONS_COUNT)
-        result = regressor.train_iteratively((coeff_A_intercept, coeff_B_intercept),
-                                             (coeff_A_price_A, coeff_B_price_A),
-                                             (coeff_A_price_B, coeff_B_price_B),
-                                             (coeff_A_min_comp_A, coeff_B_min_comp_A),
-                                             (coeff_A_min_comp_B, coeff_B_min_comp_B),
-                                             (coeff_A_rank_A, coeff_B_rank_A),
-                                             (coeff_A_rank_B, coeff_B_rank_B))
+        regressor = LogisticRegressor(sales_generator, self.OBSERVATIONS_COUNT)
+        result = regressor.train_iteratively(coefficients)
         betas, min_observations, max_observations = result
 
         # Write output

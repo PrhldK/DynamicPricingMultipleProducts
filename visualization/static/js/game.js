@@ -31,7 +31,7 @@ $(document).ready(function() {
                 var competitorPrices = res.competitorPrices;
 
                 // Fill and show competitor price table
-                fillCompetitorTable(competitorPrices, competitorsCount);
+                fillCompetitorTable(competitorPrices);
                 $('.competitor-price-table').removeClass('hide');
 
                 // Request optimal prices for generated competitor prices
@@ -65,19 +65,19 @@ $(document).ready(function() {
         });
     });
 
-    function fillCompetitorTable(competitorPrices, competitorCount) {
+    function fillCompetitorTable(competitorPrices) {
         // Remove existing beta rows
         $('.competitor-price-table > tr').remove();
 
-        for(var j = 0; j < competitorCount; j++) {
+        for(var i = 0; i < competitorPrices.length; i++) {
             // Create new row
             var row = $('<tr />');
             $('<td />')
-                .text('Competitor ' + (j + 1))
+                .text('Competitor ' + (i + 1))
                 .appendTo(row);
 
             // Add prices for each product to row
-            for(var i = 0; i < competitorPrices.length; i++) {
+            for(var j = 0; j < competitorPrices[i].length; j++) {
                 $('<td />')
                     .text(competitorPrices[i][j].toFixed(2) + '€')
                     .appendTo(row);

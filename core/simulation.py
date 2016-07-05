@@ -14,16 +14,14 @@ class Simulator:
         self.betas = betas
         self.delta = delta
 
-        self.competitors_count = len(initial_competitor_prices[0])
+        self.competitors_count = len(initial_competitor_prices)
         self.products = range(2)
         self.competitors = range(self.competitors_count)
         self.price_range = get_price_range(self.min_price, self.max_price, self.price_step)
-        self.price_indices = {price: int(price / self.price_step - self.min_price / self.price_step)
-                              for price in self.price_range}
+        self.price_indices = get_price_indices(self.min_price, self.max_price, self.price_step)
 
         self.bellman_calculator = BellmanCalculator(self.min_price, self.max_price, self.price_step,
-                                                    self.initial_competitor_prices, self.competitors_count,
-                                                    self.betas, self.delta)
+                                                    self.initial_competitor_prices, self.betas, self.delta)
 
     def simulate(self):
         # Run initial bellman
@@ -33,7 +31,7 @@ class Simulator:
         competitor_prices_time = np.zeros(shape=(self.simulation_length, 2, self.competitors_count))
         for i in self.products:
             for j in self.competitors:
-                competitor_prices_time[0, i, j] = self.initial_competitor_prices[0, j]
+                competitor_prices_time[0, i, j] = self.initial_competitor_prices[j, 0]
 
         # Own prices over the time period
         prices_time = np.zeros(shape=(self.simulation_length, 2))

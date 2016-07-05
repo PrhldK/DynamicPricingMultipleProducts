@@ -2,14 +2,15 @@ import json
 
 import tornado.web
 
-from core.regression import LogisticRegressor
 from core.simulation import Simulator
+from core.sales import SalesGeneratorFactory
+from core.regression import LogisticRegressor
 
 
 class SimulationHandler(tornado.web.RequestHandler):
     # Constants
     PRICE_STEP = 0.5
-    OBSERVATIONS = 1000
+    OBSERVATIONS_COUNT = 1000
     DELTA = 0.99
 
     def get(self):
@@ -20,9 +21,12 @@ class SimulationHandler(tornado.web.RequestHandler):
         competitor_prices = json.loads(self.get_argument('competitorPrices'))
         competitors_count = len(competitor_prices[0])
 
+        # Create sale generator
+        sales_generator_factory = SalesGeneratorFactory(min_price, max_price, self.PRICE_STEP, competitors_count)
+        sales_generator = sales_generator_factory.create_simple()
+
         # Run regression
-        regressor = LogisticRegressor(min_price, max_price, self.PRICE_STEP,
-                                      competitors_count, self.OBSERVATIONS)
+        regressor = LogisticRegressor(sales_generator, self.OBSERVATIONS_COUNT)
         betas = regressor.train()
 
         # Run simulation

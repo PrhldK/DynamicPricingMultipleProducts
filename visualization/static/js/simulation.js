@@ -21,7 +21,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(res) {
                 // Fill and show competitor price table
-                fillCompetitorTable(res.competitorPrices, competitorCount);
+                fillCompetitorTable(res.competitorPrices);
                 $('#competitor-price-table--simulation').removeClass('hide');
             },
             complete: function() {
@@ -34,28 +34,26 @@ $(document).ready(function() {
         });
     });
 
-    function fillCompetitorTable(competitorPrices, competitorCount) {
+    function fillCompetitorTable(competitorPrices) {
 
         // Remove existing rows
         $('#competitor-price-table--simulation > tr').remove();
 
-        for(var j = 0; j < competitorCount; j++) {
+        for(var i = 0; i < competitorPrices.length; i++) {
             // Create new row
             var row = $('<tr />');
             $('<td />')
-                .text('Competitor ' + (j + 1))
+                .text('Competitor ' + (i + 1))
                 .appendTo(row);
 
-
-
             // Add prices for each product to row
-            for(var i = 0; i < competitorPrices.length; i++) {
-              var input = document.createElement("input");
-              input.type = "number";
-              input.className = "-small";
-              input.value = competitorPrices[i][j].toFixed(2);
-              $('<td />').append(input)
-                  .appendTo(row);
+            for(var j = 0; j < competitorPrices[i].length; j++) {
+                var input = $('<input />', { type: 'number' })
+                    .addClass('-small')
+                    .val(competitorPrices[i][j].toFixed(2));
+
+                $('<td />').append(input)
+                    .appendTo(row);
             }
 
             // Append row to table
