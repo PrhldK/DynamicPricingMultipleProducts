@@ -14,8 +14,8 @@ class SimulationHandler(tornado.web.RequestHandler):
 
     def get(self):
         # Get query parameter
-        min_price = int(self.get_argument('minPrice'))
-        max_price = int(self.get_argument('maxPrice'))
+        min_price = float(self.get_argument('minPrice'))
+        max_price = float(self.get_argument('maxPrice'))
         price_step = float(self.get_argument('priceStep'))
         simulation_length = int(self.get_argument('simulationLength'))
         competitor_prices = json.loads(self.get_argument('competitorPrices'))
