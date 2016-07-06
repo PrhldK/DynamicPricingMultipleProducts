@@ -2,7 +2,7 @@
     <div class="col s6">
         <h5>Situation Generation</h5>
         <label for="competitorsCount">Number of Competitors:</label>
-        <input id="competitorsCount" class="-small" type="number" min="1" max="10" value="1" />
+        <input id="competitorsCount" class="-small" type="number" min="1" max="10" value="5" />
         <a class="waves-effect waves-light btn" id="btnGenerateSituation">Generate</a>
         <div class="game-preloader preloader preloader-wrapper active hide">
             <div class="spinner-layer spinner-red-only">
@@ -34,13 +34,13 @@
         <h5>Price Combination Check</h5>
         <div class="input-field col s4">
             <label for="gamePriceA">Price for Product A</label>
-            <input id="gamePriceA" class="game-price-input a" type="text" class="validate" disabled />
+            <input id="gamePriceA" class="game-price-input a" type="number" step="0.5" min="1" max="20" class="validate" disabled />
         </div>
 
 
         <div class="input-field col s4">
             <label for="gamePriceB">Price for Product B</label>
-            <input id="gamePriceB" class="game-price-input b" type="text" class="validate" disabled />
+            <input id="gamePriceB" class="game-price-input b" type="number" step="0.5" min="1" max="20" class="validate" disabled />
         </div>
 
         <div class="col s4">

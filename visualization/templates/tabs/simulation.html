@@ -1,6 +1,7 @@
 <div class="col s12">
     <div class="col s6">
         <h5>Situation Generation</h5>
+        <span>Prices can be set in 50ct steps.</span>
         <div>
           <label for="competitorCount-simulation">Number of Competitors:</label>
           <input id="competitorCount-simulation" class="-small" type="number" min="1" max="10" value="5" />
@@ -8,14 +9,14 @@
 
         <div>
           <label for="simulationLength-simulation">Simulation Steps:</label>
-          <input id="simulationLength-simulation" class="-small" type="number" min="1" max="1000" value="50" />
+          <input id="simulationLength-simulation" class="-small" type="number" min="1" max="1000" value="300" />
         </div>
 
         <div>
           <label for="priceRangeBegin-simulation">Price Range</label>
-          <input id="priceRangeBegin-simulation" class="-small" type="number" min="1" max="99" value="1" />
+          <input id="priceRangeBegin-simulation" class="-small" type="number" step="0.5" min="1" max="99" value="1" />
           <label for="priceRangeBegin-simulation">-</label>
-          <input id="priceRangeEnd-simulation" class="-small" type="number" min="2" max="100" value="20" />
+          <input id="priceRangeEnd-simulation" class="-small" type="number" step="0.5"  min="2" max="100" value="20" />
         </div>
 
         <a class="waves-effect waves-light btn" id="btnGenerateSituation-simulation">Generate</a>
@@ -45,12 +46,67 @@
     </div>
     <div class="col s6">
         <a class="waves-effect waves-light btn hide" id="btnSimulate-simulation">Simulate</a>
+
+        <div class="simulation-preloader-2 preloader preloader-wrapper active hide">
+            <div class="spinner-layer spinner-red-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="simulation-surface-plot-container"></div>
-        <div class="simulation-prices-container"></div>
-        <div class="simulation-sales-container"></div>
-        <div class="simulation-competitor-A-container"></div>
-        <div class="simulation-competitor-B-container"></div>
-        <div class="simulation-profit-container"></div>
-        <div class="simulation-naive-comparison-container"></div>
+    </div>
+
+    <div class="col s12 result-container--simulation hide">
+      <div class="col s12">
+          <ul class="collapsible" data-collapsible="accordion">
+              <li>
+                  <div class="collapsible-header"><i class="material-icons">euro_symbol</i>Prices & Sales</div>
+                  <div class="collapsible-body">
+                      <div class="collapsible-container">
+                        <div class="col s12">
+                          <div class="simulation-prices-container col s12"></div>
+                        </div>
+                        <div class="col s12">
+                          <div class="simulation-sales-container"></div>
+                        </div>
+                      </div>
+                  </div>
+              </li>
+              <li>
+                  <div class="collapsible-header"><i class="material-icons">local_atm</i>Competitors</div>
+                  <div class="collapsible-body">
+                      <div class="collapsible-container">
+                          <div class="col s12">
+                            <div class="simulation-competitor-A-container"></div>
+                          </div>
+                          <div class="col s12">
+                            <div class="simulation-competitor-B-container"></div>
+                          </div>
+                      </div>
+                  </div>
+              </li>
+              <li>
+                  <div class="collapsible-header"><i class="material-icons">shopping_cart</i>Profit</div>
+                  <div class="collapsible-body">
+                      <div class="collapsible-container">
+                          <div class="col s12">
+                            <div class="simulation-profit-container"></div>
+                          </div>
+                          <div class="col s12">
+                            <div class="simulation-naive-comparison-container"></div>
+                          </div>
+                      </div>
+                  </div>
+              </li>
+          </ul>
+      </div>
     </div>
 </div>

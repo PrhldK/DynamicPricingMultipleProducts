@@ -43,6 +43,9 @@ $(document).ready(function() {
     });
 
     $('#btnSimulate-simulation').click(function() {
+        $('.simulation-preloader-2').removeClass('hide');
+        $('.result-container--simulation').addClass('hide');
+
         // Calculate bellman values to render 3D plot
         $.ajax({
             type: 'GET',
@@ -79,8 +82,18 @@ $(document).ready(function() {
                 renderCompetitorChart($('.simulation-competitor-B-container'), 'Competitor Prices Product B', res.prices[1], res.competitorPrices[1]);
                 renderProfitChart($('.simulation-profit-container'), res.profit, simulationLength);
                 renderNaiveComparisonChart($('.simulation-naive-comparison-container'), res.profit, res.naiveProfit, simulationLength);
+
+                $('.simulation-preloader-2').addClass('hide');
+                $('.result-container--simulation').removeClass('hide');
             }
         });
+    });
+
+    $('.collapsible-header').click(function() {
+      var windowHeight = $('window').innerHeight();
+      var windowWidth = $('window').innerWidth();
+
+      window.resizeBy(200, 200);
     });
 
     function fillCompetitorTable(competitorPrices) {
