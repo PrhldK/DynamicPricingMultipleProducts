@@ -28,10 +28,10 @@ class Simulator:
         sale_probs, opt_prices, bellman_results = self.bellman_calculator.calculate()
 
         # Competitor prices over the time period
-        competitor_prices_time = np.zeros(shape=(self.simulation_length, 2, self.competitors_count))
+        competitor_prices_time = np.zeros(shape=(self.simulation_length, self.competitors_count, 2))
         for i in self.products:
             for j in self.competitors:
-                competitor_prices_time[0, i, j] = self.initial_competitor_prices[j, 0]
+                competitor_prices_time[0, j, i] = self.initial_competitor_prices[j, i]
 
         # Own prices over the time period
         prices_time = np.zeros(shape=(self.simulation_length, 2))
@@ -45,8 +45,8 @@ class Simulator:
 
         # Naive Prices
         naive_prices_time = np.zeros(shape=(self.simulation_length, 2))
-        naive_prices_time[0, 0] = max(self.min_price, np.min(competitor_prices_time[0, 0]) - self.price_step)
-        naive_prices_time[0, 1] = max(self.min_price, np.sort(competitor_prices_time[0, 1])[1] - self.price_step)
+        naive_prices_time[0, 0] = max(self.min_price, np.swapaxes(competitor_prices_time, 1, 2)[0, 0].min() - self.price_step)
+        naive_prices_time[0, 1] = max(self.min_price, np.sort(np.swapaxes(competitor_prices_time, 1, 2)[0, 1])[1] - self.price_step)
         naive_product_sales = np.zeros(shape=(self.simulation_length, 2))
         naive_profit_time = np.zeros(shape=(self.simulation_length, 2))
         naive_expected_profit = np.zeros(shape=self.simulation_length)
@@ -78,10 +78,10 @@ class Simulator:
                 for j in self.competitors:
                     if np.random.uniform(0, 1) < 0.1:
                         boost = np.random.uniform(0.8, 1.2)
-                        competitor_prices_time[step, i, j] = min(self.max_price, round(competitor_prices_time[step - 1, i, j] * boost, 1))
+                        competitor_prices_time[step, j, i] = min(self.max_price, round(competitor_prices_time[step - 1, j, i] * boost, 1))
                         calculate_bellman_again = True
                     else:
-                        competitor_prices_time[step, i, j] = competitor_prices_time[step-1, i, j]
+                        competitor_prices_time[step, j, i] = competitor_prices_time[step-1, j, i]
 
             # adjust own prices for next period
             if calculate_bellman_again:
@@ -93,7 +93,18 @@ class Simulator:
                 prices_time[step, 1] = prices_time[step-1, 1]
 
             # adjust naive prices for next period
-            naive_prices_time[step, 0] = max(self.min_price, round((np.min(competitor_prices_time[step, 0]) - self.price_step) * 2) / 2)
-            naive_prices_time[step, 1] = max(self.min_price, round((np.sort(competitor_prices_time[step, 1])[1] - self.price_step) * 2) / 2)
+            naive_prices_time[step, 0] = max(self.min_price, round((np.swapaxes(competitor_prices_time, 1, 2)[step, 0].min() - self.price_step) * 2) / 2)
+            naive_prices_time[step, 1] = max(self.min_price, round((np.sort(np.swapaxes(competitor_prices_time, 1, 2)[step, 1])[1] - self.price_step) * 2) / 2)
 
-        return competitor_prices_time, prices_time, product_sales, profit_time, expected_profit, naive_expected_profit
+        # Swap axes
+        prices_time = np.swapaxes(prices_time, 0, 1)
+        product_sales = np.swapaxes(product_sales, 0, 1)
+        profit_time = np.swapaxes(profit_time, 0, 1)
+
+        naive_prices_time = np.swapaxes(naive_prices_time, 0, 1)
+        naive_product_sales = np.swapaxes(naive_product_sales, 0, 1)
+        naive_profit_time = np.swapaxes(naive_profit_time, 0, 1)
+
+        competitor_prices_time = np.swapaxes(competitor_prices_time, 0,2)
+
+        return competitor_prices_time, prices_time, product_sales, profit_time, naive_profit_time

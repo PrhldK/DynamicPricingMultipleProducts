@@ -3,19 +3,19 @@
         <h5>Situation Generation</h5>
         <div>
           <label for="competitorCount-simulation">Number of Competitors:</label>
-          <input id="competitorCount-simulation" class="-small" type="number" min="1" max="10" value="1" />
+          <input id="competitorCount-simulation" class="-small" type="number" min="1" max="10" value="5" />
         </div>
 
         <div>
           <label for="simulationLength-simulation">Simulation Steps:</label>
-          <input id="simulationLength-simulation" class="-small" type="number" min="1" max="1000" value="1" />
+          <input id="simulationLength-simulation" class="-small" type="number" min="1" max="1000" value="50" />
         </div>
 
         <div>
           <label for="priceRangeBegin-simulation">Price Range</label>
           <input id="priceRangeBegin-simulation" class="-small" type="number" min="1" max="99" value="1" />
           <label for="priceRangeBegin-simulation">-</label>
-          <input id="priceRangeEnd-simulation" class="-small" type="number" min="2" max="100" value="1" />
+          <input id="priceRangeEnd-simulation" class="-small" type="number" min="2" max="100" value="20" />
         </div>
 
         <a class="waves-effect waves-light btn" id="btnGenerateSituation-simulation">Generate</a>
@@ -44,6 +44,13 @@
         </table>
     </div>
     <div class="col s6">
-      <a class="waves-effect waves-light btn hide" id="btnSimulate-simulation">Simulate</a>
+        <a class="waves-effect waves-light btn hide" id="btnSimulate-simulation">Simulate</a>
+        <div class="simulation-surface-plot-container"></div>
+        <div class="simulation-prices-container"></div>
+        <div class="simulation-sales-container"></div>
+        <div class="simulation-competitor-A-container"></div>
+        <div class="simulation-competitor-B-container"></div>
+        <div class="simulation-profit-container"></div>
+        <div class="simulation-naive-comparison-container"></div>
     </div>
 </div>
