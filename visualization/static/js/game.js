@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var minPrice, maxPrice, priceStep, competitorPrices, rawValues, optimalPrices;
+    var minPrice, maxPrice, priceStep, competitorPrices, rawValues, optimalPrices, tries;
 
     $('#btnGenerateSituation').click(function() {
         var competitorsCount = $('#competitorsCount').val();
@@ -29,6 +29,9 @@ $(document).ready(function() {
                 maxPrice = res.maxPrice;
                 priceStep = res.priceStep;
                 competitorPrices = res.competitorPrices;
+
+                // Reset tries array
+                tries = [];
 
                 // Fill and show competitor price table
                 fillCompetitorTable(competitorPrices);
@@ -102,9 +105,21 @@ $(document).ready(function() {
             $('.game-result.success').removeClass('hide');
         }
         else {
+            // Add try to tries list
+            var tried = tries.some(function(combination) {
+                return combination[0] === priceA && combination[1] === priceB;
+            });
+            if(!tried) {
+                tries.push([priceA, priceB]);
+            }
+
             // Show profit difference
             var profitDifference = getExpectedProfit(optimalPriceA, optimalPriceB) - getExpectedProfit(priceA, priceB);
             $('.profit-difference').text(profitDifference.toFixed(2));
+
+            // Show number of remaining tries
+            var remainingTries = Math.pow(rawValues.length, 2) - tries.length;
+            $('.remaining-tries').text(remainingTries);
 
             $('.game-result.fail').removeClass('hide');
         }
