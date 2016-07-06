@@ -27,13 +27,14 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function(res) {
-                // Show results
-                fillResultTable(res.meta.betaCount, res.meta.minObservations, res.meta.maxObservations, res.data);
+                fillBetaTable(res.meta.coeffsCount, res.meta.minObservations, res.meta.maxObservations, res.coeffs);
+                fillSituationTable(res.prices, res.competitorPrices, res.saleProbs, 15);
+
 
                 renderChart($('.beta-chart.a'), 'Beta Coefficients Product A',
-                            res.meta.minObservations , res.meta.maxObservations, res.data[0]);
+                            res.meta.minObservations , res.meta.maxObservations, res.coeffs[0]);
                 renderChart($('.beta-chart.b'), 'Beta Coefficients Product B',
-                            res.meta.minObservations , res.meta.maxObservations, res.data[1]);
+                            res.meta.minObservations , res.meta.maxObservations, res.coeffs[1]);
             },
             complete: function() {
                 // Hide loading indicators
@@ -44,7 +45,7 @@ $(document).ready(function() {
         });
     });
 
-    function fillResultTable(betaCount, minObservations, maxObservations, data) {
+    function fillBetaTable(betaCount, minObservations, maxObservations, data) {
         // Remove existing beta rows
         $(".beta-table > tr").remove();
 
@@ -68,6 +69,40 @@ $(document).ready(function() {
 
         // Render mathjax content
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'betaResults']);
+    }
+
+    function fillSituationTable(prices, competitorPrices, saleProbs, count) {
+        $('.situations-table > tr').remove();
+
+        for(var i = 0; i < count; i++) {
+            // Create new row
+            var row = $('<tr />');
+
+            // All prices
+            for(var j = 0; j < 2; j++) {
+                // Own price
+                $('<td />')
+                    .text(prices[i][j] + '€')
+                    .appendTo(row);
+
+                // Competitor price
+                for(var k = 0; k < competitorPrices[i][j].length; k++) {
+                    $('<td />')
+                        .text(competitorPrices[i][j][k] + '€')
+                        .appendTo(row);
+                }
+            }
+
+            // Sale probs
+            for(var j = 0; j < saleProbs[i].length; j++) {
+                $('<td />')
+                    .text(saleProbs[i][j])
+                    .appendTo(row);
+            }
+
+            // Append row to table
+            $('.situations-table').append(row);
+        }
     }
 
     function renderChart(container, title, minObservations, maxObservations, data) {

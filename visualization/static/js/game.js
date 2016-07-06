@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var rawValues, optimalPrices;
+    var minPrice, maxPrice, priceStep, competitorPrices, rawValues, optimalPrices;
 
     $('#btnGenerateSituation').click(function() {
         var competitorsCount = $('#competitorsCount').val();
@@ -25,10 +25,10 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(res) {
                 // Store situation globally
-                var minPrice = res.minPrice;
-                var maxPrice = res.maxPrice;
-                var priceStep = res.priceStep;
-                var competitorPrices = res.competitorPrices;
+                minPrice = res.minPrice;
+                maxPrice = res.maxPrice;
+                priceStep = res.priceStep;
+                competitorPrices = res.competitorPrices;
 
                 // Fill and show competitor price table
                 fillCompetitorTable(competitorPrices);
@@ -91,6 +91,8 @@ $(document).ready(function() {
 
     $('#btnCheckPrices').click(function() {
         // Get prices
+        var optimalPriceA = optimalPrices[0];
+        var optimalPriceB = optimalPrices[1];
         var priceA = parseFloat($('.game-price-input.a').val());
         var priceB = parseFloat($('.game-price-input.b').val());
 
@@ -100,6 +102,10 @@ $(document).ready(function() {
             $('.game-result.success').removeClass('hide');
         }
         else {
+            // Show profit difference
+            var profitDifference = getExpectedProfit(optimalPriceA, optimalPriceB) - getExpectedProfit(priceA, priceB);
+            $('.profit-difference').text(profitDifference.toFixed(2));
+
             $('.game-result.fail').removeClass('hide');
         }
     });
@@ -109,4 +115,12 @@ $(document).ready(function() {
         $('.optimal-price.b').text(optimalPrices[1].toFixed(2));
         $('.game-result.solution').removeClass('hide');
     });
+
+    function getExpectedProfit(priceA, priceB) {
+        return rawValues[getPriceIndex(priceA)][getPriceIndex(priceB)];
+    }
+
+    function getPriceIndex(price) {
+        return price / priceStep - minPrice / priceStep;
+    }
 });
