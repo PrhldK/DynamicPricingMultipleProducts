@@ -20,7 +20,8 @@ $(document).ready(function() {
             type: 'GET',
             url: '/competitors',
             data: {
-                competitorsCount: competitorsCount
+                competitorsCount: competitorsCount,
+                priceStep: 0.1
             },
             dataType: 'json',
             success: function(res) {
@@ -136,6 +137,6 @@ $(document).ready(function() {
     }
 
     function getPriceIndex(price) {
-        return price / priceStep - minPrice / priceStep;
+        return parseInt(price / priceStep - minPrice / priceStep);
     }
 });
