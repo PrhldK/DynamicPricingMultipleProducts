@@ -10,8 +10,8 @@ class RegressionHandler(tornado.web.RequestHandler):
     # Constants
     MIN_PRICE = 1
     MAX_PRICE = 20
-    PRICE_STEP = 0.1
-    COMPETITORS_COUNT = 5
+    PRICE_STEP = 0.5
+    COMPETITORS_COUNT = 2
     OBSERVATIONS_COUNT = 1000
 
     def get(self):
@@ -42,22 +42,25 @@ class RegressionHandler(tornado.web.RequestHandler):
 
         # Create sale generator
         sales_generator_factory = SalesGeneratorFactory(self.MIN_PRICE, self.MAX_PRICE,
-                                                       self.PRICE_STEP, self.COMPETITORS_COUNT)
+                                                        self.PRICE_STEP, self.COMPETITORS_COUNT)
         sales_generator = sales_generator_factory.create_extended()
 
         # Run regression
         regressor = LogisticRegressor(sales_generator, self.OBSERVATIONS_COUNT)
         result = regressor.train_iteratively(coefficients)
-        betas, min_observations, max_observations = result
+        coeffs, prices, competitor_prices, sale_probs, min_observations, max_observations = result
 
         # Write output
         self.write(json.dumps({
             'meta': {
                 'minObservations': min_observations,
                 'maxObservations': max_observations,
-                'betaCount': min(len(x) for x in betas)
+                'coeffsCount': min(len(x) for x in coeffs)
             },
-            'data': betas
+            'coeffs': coeffs,
+            'prices': prices.tolist(),
+            'competitorPrices': competitor_prices.tolist(),
+            'saleProbs': sale_probs.tolist()
         }))
 
 

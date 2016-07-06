@@ -38,11 +38,14 @@ class LogisticRegressor:
 
         # Run regressions
         explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in self.products]
-        betas = np.empty(shape=(observations_count, 2, len(explanatory_vars[0])))
+        coeffs = np.empty(shape=(observations_count, 2, len(explanatory_vars[0])))
         for k in range(min_observations, max_observations + 1):
-            betas[k - min_observations] = [self.fit_model(explanatory_vars[i], sale_probs[i], k) for i in self.products]
+            coeffs[k - min_observations] = [self.fit_model(explanatory_vars[i], sale_probs[i], k) for i in self.products]
 
-        return np.swapaxes(np.swapaxes(betas, 0, 1), 1, 2).tolist(), min_observations, max_observations
+        sale_probs = np.swapaxes(sale_probs, 0, 1)
+        coeffs = np.swapaxes(np.swapaxes(coeffs, 0, 1), 1, 2).tolist()
+
+        return coeffs, prices, competitor_prices, sale_probs, min_observations, max_observations
 
     def get_explanatory_vars(self, product, ranks, prices, competitor_prices):
         explanatory_1 = [1] * self.observations_count
