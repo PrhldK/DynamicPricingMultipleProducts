@@ -30,13 +30,13 @@ class LogisticRegressor:
         # Determine lower observations count bound depending on generated situation
         min_observations = 2
         max_observations = self.observations_count
-        observations_count = max_observations - min_observations + 1
         for k in range(min_observations, max_observations + 1):
             if all([len(np.unique(sale_probs[i][:k])) == 2 for i in self.products]):
                 min_observations = k
                 break
 
         # Run regressions
+        observations_count = max_observations - min_observations + 1
         explanatory_vars = [self.get_explanatory_vars(i, ranks, prices, competitor_prices) for i in self.products]
         coeffs = np.empty(shape=(observations_count, 2, len(explanatory_vars[0])))
         for k in range(min_observations, max_observations + 1):
