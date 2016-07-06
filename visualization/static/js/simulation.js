@@ -59,6 +59,8 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(res) {
                 renderSurfacePlot($('.simulation-surface-plot-container'), res.rawValues);
+                $('#optimal-pice-A--simulation').text('Optimal Price A: ' + res.optimalPrices[0]);
+                $('#optimal-pice-B--simulation').text('Optimal Price B: ' + res.optimalPrices[1]);
             }
         });
 
@@ -87,13 +89,6 @@ $(document).ready(function() {
                 $('.result-container--simulation').removeClass('hide');
             }
         });
-    });
-
-    $('.collapsible-header').click(function() {
-      var windowHeight = $('window').innerHeight();
-      var windowWidth = $('window').innerWidth();
-
-      window.resizeBy(200, 200);
     });
 
     function fillCompetitorTable(competitorPrices) {

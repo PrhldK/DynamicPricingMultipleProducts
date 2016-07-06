@@ -34,17 +34,6 @@
             </div>
         </div>
 
-        <table id="competitor-price-table--simulation" class="hide">
-            <thead>
-            <tr>
-                <th data-field="competitor">Competitor</th>
-                <th data-field="pricesProductA">Price Product A</th>
-                <th data-field="pricesProductB">Price Product B</th>
-            </tr>
-            </thead>
-        </table>
-    </div>
-    <div class="col s6">
         <a class="waves-effect waves-light btn hide" id="btnSimulate-simulation">Simulate</a>
 
         <div class="simulation-preloader-2 preloader preloader-wrapper active hide">
@@ -61,7 +50,24 @@
             </div>
         </div>
 
+        <table id="competitor-price-table--simulation" class="hide">
+            <thead>
+            <tr>
+                <th data-field="competitor">Competitor</th>
+                <th data-field="pricesProductA">Price Product A</th>
+                <th data-field="pricesProductB">Price Product B</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="col s6">
         <div class="simulation-surface-plot-container"></div>
+
+        <div>
+          <span id="optimal-pice-A--simulation"></span>
+          </br>
+          <span id="optimal-pice-B--simulation"></span>
+        </div>
     </div>
 
     <div class="col s12 result-container--simulation hide">
