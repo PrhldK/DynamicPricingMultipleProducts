@@ -78,17 +78,29 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function(res) {
-                renderPricesChart($('.simulation-prices-container'), res.prices);
-                renderSalesCharts($('.simulation-sales-container'), res.sales);
-                renderCompetitorChart($('.simulation-competitor-A-container'), 'Competitor Prices Product A', res.prices[0], res.competitorPrices[0]);
-                renderCompetitorChart($('.simulation-competitor-B-container'), 'Competitor Prices Product B', res.prices[1], res.competitorPrices[1]);
-                renderProfitChart($('.simulation-profit-container'), res.profit, simulationLength);
-                renderNaiveComparisonChart($('.simulation-naive-comparison-container'), res.profit, res.naiveProfit, simulationLength);
+                renderPricesChart($('.simulation-chart.prices'), res.prices);
+                renderSalesCharts($('.simulation-chart.sales'), res.sales);
+                renderCompetitorChart($('.simulation-chart.competitor.a'), 'Competitor Prices Product A', res.prices[0], res.competitorPrices[0]);
+                renderCompetitorChart($('.simulation-chart.competitor.b'), 'Competitor Prices Product B', res.prices[1], res.competitorPrices[1]);
+                renderProfitChart($('.simulation-chart.profit'), res.profit, simulationLength);
+                renderNaiveComparisonChart($('.simulation-chart.naive-comparison'), res.profit, res.naiveProfit, simulationLength);
 
                 $('.simulation-preloader-2').addClass('hide');
                 $('.result-container--simulation').removeClass('hide');
             }
         });
+    });
+
+    // Workaround to correctly size charts in hidden divs
+    $('.result-container--simulation .collapsible-header').attrchange({
+        trackValues: true,
+        callback: function(e) {
+            if(e.attributeName === 'class' && e.newValue.indexOf('active') !== -1) {
+                $(this).parent().find('.simulation-chart').each(function() {
+                   $(this).highcharts().reflow();
+                });
+            }
+        }
     });
 
     function fillCompetitorTable(competitorPrices) {

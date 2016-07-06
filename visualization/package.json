@@ -13,6 +13,7 @@
   },
   "homepage": "https://github.com/rosabraatz/DynamicPricingMultipleProducts#readme",
   "dependencies": {
+    "attrchange": "^1.0.1",
     "highcharts": "^4.2.5",
     "jquery": "^3.0.0",
     "material-design-icons": "^2.2.3",
