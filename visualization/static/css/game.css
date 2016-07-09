@@ -1,1 +1,12 @@
+.game-result .result-headline {
+    font-size: 20px;
+}
 
+.game-result .result-icon {
+    font-size: 150px;
+}
+
+.game-result .result-content {
+    margin-top: 20px;
+    margin-left: 10px;
+}

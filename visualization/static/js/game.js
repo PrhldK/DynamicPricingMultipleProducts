@@ -1,20 +1,23 @@
 $(document).ready(function() {
     var minPrice, maxPrice, priceStep, competitorPrices, rawValues, optimalPrices, tries;
 
-    $('#btnGenerateSituation').click(function() {
-        var competitorsCount = $('#competitorsCount').val();
+    $('#btnStartGame').click(function() {
+        var competitorsCount = $('#gameCompetitorCount').val();
 
         // Reset game
         $('#gamePriceA').val('');
         $('#gamePriceB').val('');
-        $('.game-result').addClass('hide');
         $('.game-price-input').prop('disabled', true);
         $('#btnCheckPrices').addClass('disabled');
+        $('#btnSolveGame').addClass('disabled');
+        $('#gameCompetitorPricesContainer').addClass('hide');
+        $('#gamePriceCombinationCheck').addClass('hide');
+        $('.game-result').addClass('hide');
+        $('.surface-plot-container').addClass('hide');
 
         // Show preloader and hide results
-        $('#btnGenerateSituation').addClass('disabled');
+        $('#btnStartGame').addClass('disabled');
         $('.game-preloader').removeClass('hide');
-        $('.competitor-price-table').addClass('hide');
 
         $.ajax({
             type: 'GET',
@@ -54,20 +57,78 @@ $(document).ready(function() {
                         rawValues = res.rawValues;
                         optimalPrices = res.optimalPrices;
 
+                        // Fill in optimal prices
+                        $('.optimal-price.a').text(optimalPrices[0].toFixed(2));
+                        $('.optimal-price.b').text(optimalPrices[1].toFixed(2));
+
                         // Enable game inputs
                         $('.game-price-input').prop('disabled', false);
                         $('#btnCheckPrices').removeClass('disabled');
                     },
                     complete: function() {
                         // Hide loading indicators
-                        $('#btnGenerateSituation').removeClass('disabled');
+                        $('#btnStartGame').removeClass('disabled');
+                        $('#btnSolveGame').removeClass('disabled');
                         $('.game-preloader').addClass('hide');
-                        $('.competitor-price-table').removeClass('hide');
+                        $('#gamePriceCombinationCheck').removeClass('hide');
+                        $('#gameCompetitorPricesContainer').removeClass('hide');
                     }
                 });
             }
         });
     });
+
+
+    $('#btnCheckPrices').click(function() {
+        // Get prices
+        var optimalPriceA = optimalPrices[0];
+        var optimalPriceB = optimalPrices[1];
+        var priceA = parseFloat($('.game-price-input.a').val());
+        var priceB = parseFloat($('.game-price-input.b').val());
+
+        // Add try to tries list
+        var tried = tries.some(function(combination) {
+            return combination[0] === priceA && combination[1] === priceB;
+        });
+        if(!tried) {
+            tries.push([priceA, priceB]);
+        }
+
+        // Show correct result
+        $('.game-result').addClass('hide');
+        if(optimalPrices[0].toFixed(2) === priceA.toFixed(2) && optimalPrices[1].toFixed(2) == priceB.toFixed(2)) {
+            // Show result
+            $('.tries-count').text(tries.length);
+            $('.game-result.success').removeClass('hide');
+
+            // Render surface plot
+            $('.surface-plot-container').removeClass('hide');
+            renderSurfacePlot($('.surface-plot-container'), rawValues);
+        }
+        else {
+            // Show profit difference
+            var profitDifference = getExpectedProfit(optimalPriceA, optimalPriceB) - getExpectedProfit(priceA, priceB);
+            $('.profit-difference').text(profitDifference.toFixed(2));
+
+            // Show number of remaining tries
+            var remainingTries = Math.pow(rawValues.length, 2) - tries.length;
+            $('.remaining-tries').text(remainingTries);
+
+            // Show result
+            $('.game-result.fail').removeClass('hide');
+        }
+    });
+
+
+    $('#btnSolveGame').click(function() {
+        $('.game-result').addClass('hide');
+        $('.game-result.solution').removeClass('hide');
+
+        // Render surface plot
+        $('.surface-plot-container').removeClass('hide');
+        renderSurfacePlot($('.surface-plot-container'), rawValues);
+    });
+
 
     function fillCompetitorTable(competitorPrices) {
         // Remove existing beta rows
@@ -92,51 +153,47 @@ $(document).ready(function() {
         }
     }
 
-
-    $('#btnCheckPrices').click(function() {
-        // Get prices
-        var optimalPriceA = optimalPrices[0];
-        var optimalPriceB = optimalPrices[1];
-        var priceA = parseFloat($('.game-price-input.a').val());
-        var priceB = parseFloat($('.game-price-input.b').val());
-
-        // Show correct result
-        $('.game-result').addClass('hide');
-        if(optimalPrices[0].toFixed(2) === priceA.toFixed(2) && optimalPrices[1].toFixed(2) == priceB.toFixed(2)) {
-            $('.game-result.success').removeClass('hide');
-        }
-        else {
-            // Add try to tries list
-            var tried = tries.some(function(combination) {
-                return combination[0] === priceA && combination[1] === priceB;
-            });
-            if(!tried) {
-                tries.push([priceA, priceB]);
-            }
-
-            // Show profit difference
-            var profitDifference = getExpectedProfit(optimalPriceA, optimalPriceB) - getExpectedProfit(priceA, priceB);
-            $('.profit-difference').text(profitDifference.toFixed(2));
-
-            // Show number of remaining tries
-            var remainingTries = Math.pow(rawValues.length, 2) - tries.length;
-            $('.remaining-tries').text(remainingTries);
-
-            $('.game-result.fail').removeClass('hide');
-        }
-    });
-
-    $('#btnSolveGame').click(function() {
-        $('.optimal-price.a').text(optimalPrices[0].toFixed(2));
-        $('.optimal-price.b').text(optimalPrices[1].toFixed(2));
-        $('.game-result.solution').removeClass('hide');
-    });
-
     function getExpectedProfit(priceA, priceB) {
         return rawValues[getPriceIndex(priceA)][getPriceIndex(priceB)];
     }
 
     function getPriceIndex(price) {
         return parseInt(price / priceStep - minPrice / priceStep);
+    }
+
+    function renderSurfacePlot(container, values) {
+        var data = new vis.DataSet();
+        for(var i = 0; i < values.length; i+=5) {
+            for (var j = 0; j < values[i].length; j+=5) {
+                data.add({
+                    x: i,
+                    y: j,
+                    z: values[i][j]
+                });
+            }
+        }
+
+        var formatLabel = function(value) {
+            return minPrice + value * priceStep + '€';
+        };
+
+        return new vis.Graph3d(container.get(0), data, {
+            style: 'surface',
+            width: container.parent().width(),
+            height: '600px',
+            showPerspective: true,
+            showGrid: true,
+            showShadow: false,
+            keepAspectRatio: true,
+            verticalRatio: 0.5,
+            xLabel: 'Price A',
+            yLabel: 'Price B',
+            zLabel: 'Expected profit',
+            xValueLabel: formatLabel,
+            yValueLabel: formatLabel,
+            zValueLabel: function(value) {
+                return value + '€';
+            }
+        });
     }
 });

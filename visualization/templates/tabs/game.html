@@ -1,10 +1,14 @@
 <div class="col s12">
-    <div class="col s6">
-        <h5>Situation Generation</h5>
-        <div>Define the number of competitors and generate their prices.</div>
-        <label for="competitorsCount">Number of Competitors:</label>
-        <input id="competitorsCount" class="-small" type="number" min="1" max="10" value="5" />
-        <a class="waves-effect waves-light btn" id="btnGenerateSituation">Generate</a>
+    <div class="col s4">
+        <h5>Game Parameters</h5>
+        <div>
+            <label for="gameCompetitorCount">Number of Competitors:</label>
+            <p class="range-field">
+                <input type="range" id="gameCompetitorCount" min="1" max="10" value="4" />
+            </p>
+        </div>
+
+        <a class="waves-effect waves-light btn" id="btnStartGame">New game</a>
         <div class="game-preloader preloader preloader-wrapper active hide">
             <div class="spinner-layer spinner-red-only">
                 <div class="circle-clipper left">
@@ -18,8 +22,38 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <table class="competitor-price-table hide">
+    <div class="col s8 hide" id="gamePriceCombinationCheck">
+        <h5>Price Combination Check</h5>
+        <div class="row">
+            Guess the optimal price combination depending on the current situation. <br/>
+            Prices can be set from 1.00€ to 20.00€ in steps of 10ct.
+        </div>
+        <div class="row">
+            <div class="input-field col s3">
+                <label for="gamePriceA">Price for Product A</label>
+                <input id="gamePriceA" class="game-price-input a" type="number" step="0.1" min="1" max="20" class="validate" disabled />
+            </div>
+
+
+            <div class="input-field col s3">
+                <label for="gamePriceB">Price for Product B</label>
+                <input id="gamePriceB" class="game-price-input b" type="number" step="0.1" min="1" max="20" class="validate" disabled />
+            </div>
+
+            <div class="col s6">
+                <a class="btn waves-effect waves-light disabled" style="margin-top: 25px;" id="btnCheckPrices">Check prices</a>
+                <a class="btn waves-effect waves-light disabled" style="margin-top: 25px;" id="btnSolveGame">Solve game</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col s12">
+    <div class="col s4 hide" id="gameCompetitorPricesContainer">
+        <h5>Competitor Prices</h5>
+        <table class="competitor-price-table">
             <thead>
             <tr>
                 <th data-field="competitor">Competitor</th>
@@ -30,44 +64,50 @@
         </table>
     </div>
 
-
-    <div class="col s6">
-        <h5>Price Combination Check</h5>
-        <div>Guess the optimal price combination depending on the current situation.</div>
-        <div>Prices can be set from 1 to 20 in steps of 10ct.</div>
-        <div class="input-field col s4">
-            <label for="gamePriceA">Price for Product A</label>
-            <input id="gamePriceA" class="game-price-input a" type="number" step="0.1" min="1" max="20" class="validate" disabled />
+    <div class="col s8 game-result success hide">
+        <div class="left">
+            <i class="material-icons result-icon">sentiment_satisfied</i>
         </div>
-
-
-        <div class="input-field col s4">
-            <label for="gamePriceB">Price for Product B</label>
-            <input id="gamePriceB" class="game-price-input b" type="number" step="0.1" min="1" max="20" class="validate" disabled />
-        </div>
-
-        <div class="col s4">
-            <a class="btn waves-effect waves-light disabled" style="margin-top: 25px;" id="btnCheckPrices"><i class="material-icons right">send</i>Check</a>
-        </div>
-        <div class="hide col s12 game-result success">
-            Congratulations! You found the best price combination! :)
-        </div>
-
-        <div class="hide game-result fail">
-            <div class="col s8">
-            Oooohhh, you didn't find the best price combination. :(<br/>
-            You can increase your expected profit by <span class="profit-difference"></span>€. <br/>
-            There are <span class="remaining-tries"></span> price combinations left.
-          </div>
-            <div class="col s4">
-              <a class="btn waves-effect waves-light" id="btnSolveGame"><i class="material-icons right">send</i>Solve</a>
-            </div>
-        </div>
-
-        <div class="hide col s12 game-result solution">
-            The best price combination is
-            <span class="optimal-price a"></span>€ for price A and
-            <span class="optimal-price b"></span>€ for price B.
+        <div class="left result-content">
+            <span class="result-headline">Congratulations! You found the best price combination!</span>
+            <p>
+                It only took you <span class="tries-count"></span> tries. <br />
+                In the surface plot below you can see the expected profit for each price combination.
+            </p>
         </div>
     </div>
+
+    <div class="col s8 game-result fail hide">
+        <div class="left">
+            <i class="material-icons result-icon">sentiment_dissatisfied</i>
+        </div>
+        <div class="left result-content">
+            <span class="result-headline">That wasn't the optimal price combination!</span>
+            <p>
+                You can increase your expected profit by <span class="profit-difference"></span>€. <br/>
+                Try again! There are only <span class="remaining-tries"></span> combinations left you haven't checked yet.
+            </p>
+
+            <div class="game-solution hide">
+                The best price combination is
+                <span class="optimal-price a"></span>€ for product A and
+                <span class="optimal-price b"></span>€ for product B.
+            </div>
+        </div>
+    </div>
+
+    <div class="col s8 game-result solution hide">
+        <div class="left">
+            <i class="material-icons result-icon">sentiment_very_dissatisfied</i>
+        </div>
+        <div class="left result-content">
+            <span class="result-headline">You have given up the game!</span>
+            <p>
+                The best price combination is <span class="optimal-price a"></span>€ for product A and <span class="optimal-price b"></span>€ for product B. <br />
+                In the surface plot below you can see the expected profit for each price combination.
+            </p>
+        </div>
+    </div>
+
+    <div class="col s8 surface-plot-container hide"></div>
 </div>
