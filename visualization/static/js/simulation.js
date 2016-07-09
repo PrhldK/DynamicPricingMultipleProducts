@@ -15,7 +15,7 @@ $(document).ready(function() {
         step: 0.5,
         range: {
             'min': 0,
-            'max': 100
+            'max': 50
         },
         format: wNumb({
             decimals: 1
@@ -29,8 +29,7 @@ $(document).ready(function() {
         maxPrice = priceRangeSlider.noUiSlider.get()[1];
 
         // Show preloader and hide results
-        $('.simulation-preloader').removeClass('hide');
-        $('.simulation-competitor-container').addClass('hide');
+        $('#simulationResults').addClass('hide');
 
         $.ajax({
             type: 'GET',
