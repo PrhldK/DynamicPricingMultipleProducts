@@ -9,8 +9,17 @@
     vertical-align: middle;
 }
 
-input.-small {
+input.small {
+    height: 30px;
     width: 50px;
     text-align: right;
     margin-right: 20px;
+}
+
+.tab-container > .col.s12:not(:first-child) {
+    margin-top: 20px;
+}
+
+.collapsible-container {
+    padding: 2rem;
 }

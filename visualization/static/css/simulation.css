@@ -1,3 +1,11 @@
-#competitor-price-table--simulation input {
+#simulationCompetitorPricesTable input {
   margin: 0;
+}
+
+#simulationPriceRange {
+    margin: 30px 0;
+}
+
+.simulation-chart {
+    margin-bottom: 35px;
 }

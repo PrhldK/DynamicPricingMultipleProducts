@@ -4,12 +4,7 @@
     margin-right: 10px !important;
 }
 
-#regression-container .result-container {
-    margin-top: 15px;
-}
-
 #regression-container .collapsible-container {
     display: table;
     width: 100%;
-    padding: 2rem;
 }

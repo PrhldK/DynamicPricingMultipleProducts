@@ -1,19 +1,36 @@
 $(document).ready(function() {
-    const colors = ['#f44336', '#3f51b5', '#009688', '#ff9800', '#9c27b0'];
+    const ownColors = ['#d50000', '#3f51b5'];
+    const competitorColors = ['#ff6d00', '#00c853', '#c6ff00', '#b388ff', '#795548', '#e91e63', '#4a148c', '#1a237e', '#009688', '#607d8b'];
+    const productNames = ['Product A', 'Product B'];
+
     var priceStep = 0.5;
     var minPrice, maxPrice, competitorCount, simulationLength, competitorPrices;
 
 
-    $('#btnGenerateSituation-simulation').click(function() {
-        competitorCount = parseInt($('#competitorCount-simulation').val());
-        simulationLength = parseInt($('#simulationLength-simulation').val());
-        minPrice = parseFloat($('#priceRangeBegin-simulation').val());
-        maxPrice = parseFloat($('#priceRangeEnd-simulation').val());
+    // Initialize price range slider
+    var priceRangeSlider = $('#simulationPriceRange').get(0);
+    noUiSlider.create(priceRangeSlider, {
+        start: [1, 20],
+        connect: true,
+        step: 0.5,
+        range: {
+            'min': 0,
+            'max': 100
+        },
+        format: wNumb({
+            decimals: 1
+        })
+    });
+
+
+    $('#btnGenerateSimulationPrices').click(function() {
+        competitorCount = parseInt($('#simulationCompetitorCount').val());
+        minPrice = priceRangeSlider.noUiSlider.get()[0];
+        maxPrice = priceRangeSlider.noUiSlider.get()[1];
 
         // Show preloader and hide results
-        $('#btnGenerateSituation-simulation').addClass('disabled');
         $('.simulation-preloader').removeClass('hide');
-        $('#competitor-price-table--simulation').addClass('hide');
+        $('.simulation-competitor-container').addClass('hide');
 
         $.ajax({
             type: 'GET',
@@ -30,39 +47,25 @@ $(document).ready(function() {
 
                 // Fill and show competitor price table
                 fillCompetitorTable(competitorPrices);
-                $('#competitor-price-table--simulation').removeClass('hide');
-            },
-            complete: function() {
-                // Hide loading indicators
-                $('#btnGenerateSituation-simulation').removeClass('disabled');
-                $('.simulation-preloader').addClass('hide');
-                $('#competitor-price-table--simulation').removeClass('hide');
-                $('#btnSimulate-simulation').removeClass('hide');
+                $('.simulation-competitor-container').removeClass('hide');
+
+                // Enable simulation button
+                $('#btnStartSimulation').removeClass('disabled');
             }
         });
     });
 
-    $('#btnSimulate-simulation').click(function() {
-        $('.simulation-preloader-2').removeClass('hide');
-        $('.result-container--simulation').addClass('hide');
+    $('#btnStartSimulation').click(function() {
+        // Get simulation length parameter
+        simulationLength = parseInt($('#simulationSteps').val());
 
-        // Calculate bellman values to render 3D plot
-        $.ajax({
-            type: 'GET',
-            url: '/bellman',
-            data: {
-                minPrice: minPrice,
-                maxPrice: maxPrice,
-                priceStep: priceStep,
-                competitorPrices: JSON.stringify(competitorPrices)
-            },
-            dataType: 'json',
-            success: function(res) {
-                renderSurfacePlot($('.simulation-surface-plot-container'), res.rawValues);
-                $('#optimal-pice-A--simulation').text('Optimal Price A: ' + res.optimalPrices[0]);
-                $('#optimal-pice-B--simulation').text('Optimal Price B: ' + res.optimalPrices[1]);
-            }
-        });
+        // Disable controls
+        $('#simulation-container .btn').addClass('disabled');
+        $('#simulation-container').find('input, #simulationPriceRange').attr('disabled', true);
+
+        // Show preloader
+        $('.simulation-preloader-2').removeClass('hide');
+        $('#simulationResults').addClass('hide');
 
         // Start simulation
         $.ajax({
@@ -78,21 +81,33 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function(res) {
+                // Render charts
                 renderPricesChart($('.simulation-chart.prices'), res.prices);
                 renderSalesCharts($('.simulation-chart.sales'), res.sales);
-                renderCompetitorChart($('.simulation-chart.competitor.a'), 'Competitor Prices Product A', res.prices[0], res.competitorPrices[0]);
-                renderCompetitorChart($('.simulation-chart.competitor.b'), 'Competitor Prices Product B', res.prices[1], res.competitorPrices[1]);
+                renderCompetitorChart($('.simulation-chart.competitor.a'), res.prices, res.competitorPrices, 0);
+                renderCompetitorChart($('.simulation-chart.competitor.b'), res.prices, res.competitorPrices, 1);
                 renderProfitChart($('.simulation-chart.profit'), res.profit, simulationLength);
                 renderNaiveComparisonChart($('.simulation-chart.naive-comparison'), res.profit, res.naiveProfit, simulationLength);
 
+                // Show results
                 $('.simulation-preloader-2').addClass('hide');
-                $('.result-container--simulation').removeClass('hide');
+                $('#simulationResults').removeClass('hide');
+
+                // Reflow highchart to correctly size it
+                $('.simulation-chart').each(function() {
+                    $(this).highcharts().reflow();
+                });
+            },
+            complete: function() {
+                // Enable controls
+                $('#simulation-container .btn').removeClass('disabled');
+                $('#simulation-container').find('input, #simulationPriceRange').attr('disabled', false);
             }
         });
     });
 
     // Workaround to correctly size charts in hidden divs
-    $('.result-container--simulation .collapsible-header').attrchange({
+    $('#simulationResults .collapsible-header').attrchange({
         trackValues: true,
         callback: function(e) {
             if(e.attributeName === 'class' && e.newValue.indexOf('active') !== -1) {
@@ -106,7 +121,7 @@ $(document).ready(function() {
     function fillCompetitorTable(competitorPrices) {
 
         // Remove existing rows
-        $('#competitor-price-table--simulation > tr').remove();
+        $('#simulationCompetitorPricesTable > tr').remove();
 
         for(var i = 0; i < competitorPrices.length; i++) {
             // Create new row
@@ -117,26 +132,32 @@ $(document).ready(function() {
 
             // Add prices for each product to row
             for(var j = 0; j < competitorPrices[i].length; j++) {
-                var input = $('<input />', { type: 'number' })
-                    .addClass('-small')
+                var input = $('<input />', {
+                    type: 'number'
+                })
+                    .addClass('small')
                     .val(competitorPrices[i][j].toFixed(2));
+                var unitSpan = $('<span />')
+                    .text('€');
 
-                $('<td />').append(input)
+                $('<td />')
+                    .append(input)
+                    .append(unitSpan)
                     .appendTo(row);
             }
 
             // Append row to table
-            $('#competitor-price-table--simulation').append(row);
+            $('#simulationCompetitorPricesTable').append(row);
         }
     }
 
     function renderPricesChart(container, prices) {
         var series = prices.map(function(value, index) {
             return {
-                name: 'Product ' + (index + 1),
+                name: productNames[index],
                 data: value,
                 lineWidth: 1,
-                color: colors[index],
+                color: ownColors[index],
                 marker: {
                     enabled: false
                 }
@@ -154,9 +175,14 @@ $(document).ready(function() {
                 tickInterval: 10
             },
             yAxis: {
-              title: {
-                  text: 'Prices'
-              }
+                title: {
+                    text: 'Prices'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value.toFixed(2) + '€';
+                    }
+                }
             },
             series: series
         });
@@ -165,10 +191,10 @@ $(document).ready(function() {
     function renderSalesCharts(container, sales) {
         var series = sales.map(function(value, index) {
             return {
-                name: 'Product ' + (index + 1),
+                name: productNames[index],
                 data: value,
                 lineWidth: 1,
-                color: colors[index],
+                color: ownColors[index],
                 marker: {
                     enabled: false
                 }
@@ -194,21 +220,21 @@ $(document).ready(function() {
         });
     }
 
-    function renderCompetitorChart(container, title, prices, competitorPrices) {
+    function renderCompetitorChart(container, prices, competitorPrices, productIndex) {
         var series = [{
             name: 'Own price',
-            data: prices,
+            data: prices[productIndex],
             lineWidth: 3,
-            color: colors[0],
+            color: ownColors[0],
             marker: {
                 enabled: false
             }
-        }].concat(competitorPrices.map(function(value, index) {
+        }].concat(competitorPrices[productIndex].map(function(value, index) {
             return {
                 name: 'Competitor ' + (index + 1),
                 data: value,
                 lineWidth: 1,
-                color: colors[index + 1],
+                color: competitorColors[index],
                 marker: {
                     enabled: false
                 }
@@ -217,7 +243,7 @@ $(document).ready(function() {
 
         container.highcharts({
             title: {
-                text: title
+                text: 'Competitor Prices ' + productNames[productIndex]
             },
             xAxis: {
                 title: {
@@ -228,6 +254,11 @@ $(document).ready(function() {
             yAxis: {
                 title: {
                     text: 'Prices'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value.toFixed(2) + '€';
+                    }
                 }
             },
             series: series
@@ -239,16 +270,16 @@ $(document).ready(function() {
             name: 'Overall profit',
             data: sumProfits(profits, simulationLength),
             lineWidth: 1,
-            color: colors[0],
+            color: '#009688',
             marker: {
                 enabled: false
             }
         }].concat(profits.map(function(value, index) {
             return {
-                name: 'Product ' + (index + 1),
+                name: productNames[index],
                 data: value,
                 lineWidth: 1,
-                color: colors[index + 1],
+                color: ownColors[index],
                 marker: {
                     enabled: false
                 }
@@ -257,7 +288,7 @@ $(document).ready(function() {
 
         container.highcharts({
             title: {
-                text: 'Profit'
+                text: 'Own Profit'
             },
             xAxis: {
                 title: {
@@ -268,6 +299,11 @@ $(document).ready(function() {
             yAxis: {
                 title: {
                     text: 'Profit'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value.toFixed(2) + '€';
+                    }
                 }
             },
             series: series
@@ -280,7 +316,7 @@ $(document).ready(function() {
                 name: 'Own overall profit',
                 data: sumProfits(profits, simulationLength),
                 lineWidth: 1,
-                color: colors[0],
+                color: '#009688',
                 marker: {
                     enabled: false
                 }
@@ -289,7 +325,7 @@ $(document).ready(function() {
                 name: 'Naive overall profit',
                 data: sumProfits(naiveProfits, simulationLength),
                 lineWidth: 1,
-                color: colors[1],
+                color: '#f44336',
                 marker: {
                     enabled: false
                 }
@@ -309,40 +345,14 @@ $(document).ready(function() {
             yAxis: {
                 title: {
                     text: 'Profit'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value.toFixed(2) + '€';
+                    }
                 }
             },
             series: series
-        });
-    }
-
-    function renderSurfacePlot(container, values) {
-        var data = new vis.DataSet();
-        for(var i = 0; i < values.length; i++) {
-            for (var j = 0; j < values[i].length; j++) {
-                data.add({
-                    x: i,
-                    y: j,
-                    z: values[i][j]
-                });
-            }
-        }
-
-        var formatLabel = function(value) {
-            return minPrice + value * priceStep + '€';
-        };
-
-        new vis.Graph3d(container.get(0), data, {
-            style: 'surface',
-            showPerspective: true,
-            showGrid: false,
-            showShadow: false,
-            keepAspectRatio: true,
-            verticalRatio: 0.5,
-            xLabel: 'Price A',
-            yLabel: 'Price B',
-            zLabel: 'Expected profit',
-            xValueLabel: formatLabel,
-            yValueLabel: formatLabel
         });
     }
 
