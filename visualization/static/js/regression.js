@@ -3,7 +3,7 @@ $(document).ready(function() {
         // Show preloader and hide results
         $('#btnStartRegression').addClass('disabled');
         $('.regression-preloader').removeClass('hide');
-        $('.result-container').addClass('hide');
+        $('#regressionResult').addClass('hide');
 
         $.ajax({
             type: 'GET',
@@ -40,7 +40,7 @@ $(document).ready(function() {
                 // Hide loading indicators
                 $('#btnStartRegression').removeClass('disabled');
                 $('.regression-preloader').addClass('hide');
-                $('.result-container').removeClass('hide');
+                $('#regressionResult').removeClass('hide');
             }
         });
     });
