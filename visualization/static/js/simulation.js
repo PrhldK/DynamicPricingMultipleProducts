@@ -4,7 +4,7 @@ $(document).ready(function() {
     const productNames = ['Product A', 'Product B'];
 
     var priceStep = 0.5;
-    var minPrice, maxPrice, competitorCount, simulationLength, competitorPrices;
+    var minPrice, maxPrice, competitorCount, simulationLength;
 
 
     // Initialize price range slider
@@ -42,10 +42,8 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function(res) {
-                competitorPrices = res.competitorPrices;
-
                 // Fill and show competitor price table
-                fillCompetitorTable(competitorPrices);
+                fillCompetitorTable(res.competitorPrices);
                 $('.simulation-competitor-container').removeClass('hide');
 
                 // Enable simulation button
@@ -76,7 +74,7 @@ $(document).ready(function() {
                 priceStep: priceStep,
                 competitorsCount: competitorCount,
                 simulationLength: simulationLength,
-                competitorPrices: JSON.stringify(competitorPrices)
+                competitorPrices: JSON.stringify(getCompetitorPrices())
             },
             dataType: 'json',
             success: function(res) {
@@ -148,6 +146,23 @@ $(document).ready(function() {
             // Append row to table
             $('#simulationCompetitorPricesTable').append(row);
         }
+    }
+
+    function getCompetitorPrices() {
+        var competitorPrices = [];
+        $('#simulationCompetitorPricesTable > tr').each(function() {
+            var prices = [];
+            $(this).find('input').each(function() {
+                var price = parseFloat($(this).val());
+                price = Math.round(price * 2) / 2;
+
+                prices.push(price);
+            });
+
+            competitorPrices.push(prices);
+        });
+
+        return competitorPrices;
     }
 
     function renderPricesChart(container, prices) {
