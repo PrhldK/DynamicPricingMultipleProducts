@@ -1,4 +1,12 @@
 $(document).ready(function() {
+    const explanatoryVarsDescriptions = [
+        'Intercept (1)',
+        'Rank of the product',
+        'Difference of price and minimal competitor price',
+        'Difference of price and minimal own price',
+        '(Difference of price and minimal own price)&sup2;'
+    ];
+
     $('#btnStartRegression').click(function() {
         // Show preloader and hide results
         $('#btnStartRegression').addClass('disabled');
@@ -54,6 +62,9 @@ $(document).ready(function() {
             var row = $('<tr />');
             $('<td />')
                 .text('$\\beta_' + j + '$')
+                .appendTo(row);
+            $('<td />')
+                .html(explanatoryVarsDescriptions[j])
                 .appendTo(row);
 
             // Add betas for each product to row
