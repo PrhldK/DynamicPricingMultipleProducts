@@ -10,3 +10,11 @@
     margin-top: 20px;
     margin-left: 10px;
 }
+
+.placeholder {
+    font-weight:bold;
+}
+
+.placeholder.currency::after {
+    content: '€';
+}
