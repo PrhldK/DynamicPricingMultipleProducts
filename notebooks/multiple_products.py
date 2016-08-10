@@ -9,8 +9,7 @@ import math
 import operator
 import itertools
 import numpy as np
-import sklearn.linear_model
-import statsmodels.api as sm
+from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 from matplotlib import cm
@@ -108,21 +107,21 @@ def get_x(product, r, p):
 
 # In[8]:
 
+def fit_model(x, P):
+    regressor = LogisticRegression(fit_intercept=False)
+    model = regressor.fit(x.transpose(), P)
+    coeffs = model.coef_[0].tolist()
+
+    return coeffs
+
 x = [get_x(i, r, p) for i in product_range]
-logits = [sm.Logit(P[i], x[i].transpose()) for i in product_range]
-results = [logits[i].fit() for i in product_range]
-beta = [results[i].params for i in product_range]
+beta = [fit_model(x[i], P[i]) for i in product_range]
 print('betas: ' + str(beta))
-
-
-# In[9]:
-
-print('AIC: ' + str([results[i].aic for i in product_range]))
 
 
 # ## Optimierung
 
-# In[10]:
+# In[9]:
 
 # Generate competitor prices for new, specific situation
 p = np.array([generate_prices(a_ranges[i], C) for i in product_range])
@@ -131,7 +130,7 @@ print('competitor prices: ' + str(p))
 
 # ### Recreate explanatory vars depending on price combinations
 
-# In[11]:
+# In[10]:
 
 min_p = min_price
 def calculate_min_p():
@@ -182,7 +181,7 @@ def update_x_replica_2_for_simulation(p, x_2):
     return np.array([x_2[0], explanatory_2, explanatory_3, x_2[3], x_2[4]])
 
 
-# In[12]:
+# In[11]:
 
 calculate_min_p()
 x = [get_x_replica_1(p), get_x_replica_2(p)]
@@ -190,7 +189,7 @@ x = [get_x_replica_1(p), get_x_replica_2(p)]
 
 # ### Calculate sale probabilities with betas
 
-# In[13]:
+# In[12]:
 
 def calculate_P(beta, x):
     P = np.empty(shape=(2, 2, len(a_ranges[0]), len(a_ranges[1])))
@@ -204,21 +203,21 @@ def calculate_P(beta, x):
     return P
 
 
-# In[14]:
+# In[13]:
 
 P = calculate_P(beta, x)
 
 
 # ### Calculate optimal prices using Bellman
 
-# In[15]:
+# In[14]:
 
 def get_event_combinations(n):
         possibile_events = [[0] if n[i] == 0 else [0,1] for i in product_range]
         return itertools.product(*possibile_events)
 
 
-# In[16]:
+# In[15]:
 
 def bellman(P):
     V = np.empty(shape=(len(a_ranges[0]),len(a_ranges[1])))
@@ -235,7 +234,7 @@ def bellman(P):
     return opt_a, V
 
 
-# In[17]:
+# In[16]:
 
 opt_a, V = bellman(P)
 print('optimal price combination: ' + str(opt_a))
@@ -244,7 +243,7 @@ print('maximum expected profit: ' + str(V[a_index[opt_a[0]]][a_index[opt_a[1]]])
 
 # ### 3D Visualization for Expected Profit of  Price Combinations
 
-# In[18]:
+# In[17]:
 
 fig = plt.figure()
 axes = fig.gca(projection = '3d')
@@ -263,7 +262,7 @@ plt.show()
 
 # ## Simulation
 
-# In[19]:
+# In[18]:
 
 # Competitor prices over the time period
 p_time = np.zeros(shape=(T, 2, C))
@@ -290,7 +289,7 @@ naive_profit_time = np.zeros(shape=(T, 2))
 naive_expected_profit = np.zeros(shape=(T))
 
 
-# In[20]:
+# In[19]:
 
 for t in range(1, T):
     for i in product_range:
@@ -343,7 +342,7 @@ for t in range(1, T):
 
 # ### Plots
 
-# In[21]:
+# In[20]:
 
 # own strategy
 swap_a_time = np.swapaxes(a_time, 0,1)
@@ -360,7 +359,7 @@ swap_p_time = np.swapaxes(p_time, 0,2)
 
 # #### Prices over time
 
-# In[22]:
+# In[21]:
 
 plt.figure(figsize=(20, 4))
 plt.plot(range(T), swap_a_time[0], label='Prices A', color="red", linewidth=2.5)
@@ -372,7 +371,7 @@ plt.show()
 
 # #### Sales over time
 
-# In[23]:
+# In[22]:
 
 plt.figure(figsize=(20, 4))
 plt.plot(range(T), swap_product_sales[0], label='Sales A', color="red", linewidth=2.5)
@@ -383,7 +382,7 @@ plt.show()
 
 # #### Product 1: Own Prices and Competitor Prices
 
-# In[24]:
+# In[23]:
 
 plt.figure(figsize=(20, 4))
 plt.plot(range(T), swap_a_time[0], label='Prices', linewidth=2.5)
@@ -396,7 +395,7 @@ plt.show()
 
 # #### Product 2: Own Prices and Competitor Prices
 
-# In[25]:
+# In[24]:
 
 plt.figure(figsize=(20, 4))
 plt.plot(range(T), swap_a_time[1], label='Prices', linewidth=2.5)
@@ -410,7 +409,7 @@ plt.show()
 
 # #### Profit
 
-# In[26]:
+# In[25]:
 
 plt.figure(figsize=(20, 4))
 plt.plot(range(T), swap_profit_time[0], label='Profit 1', color="blue", linewidth=2.5)
@@ -422,7 +421,7 @@ plt.show()
 
 # #### Compare to Naive Strategy: Profit
 
-# In[27]:
+# In[26]:
 
 plt.figure(figsize=(20, 4))
 plt.plot(range(T), np.sum(profit_time,1), label='Own Overall Profit', color="blue", linewidth=2.5)
@@ -433,7 +432,7 @@ plt.show()
 
 # #### Compare to Naive Strategy: Expected Profit
 
-# In[28]:
+# In[27]:
 
 plt.figure(figsize=(20, 4))
 plt.plot(range(T), expected_profit, label='Own Expected Profit', color="blue", linewidth=2.5)
