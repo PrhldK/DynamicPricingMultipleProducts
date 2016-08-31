@@ -2,7 +2,7 @@
 
 ## Installation
 Python 3.5 must be installed to run the code. 
-To install the dependencies for both, the notebooks and the visualization, simply execute the `install_dependencies.sh` script.
+To install the dependencies for both, the notebooks and the visualization, simply execute the `install_dependencies.sh` script (`pip` and `npm` must be installed).
 
 ## View Code in Jupyter Notebook
 You can view the code as static notebook directly on github (simply click on the file).
