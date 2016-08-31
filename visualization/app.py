@@ -36,8 +36,8 @@ def make_app():
     return tornado.web.Application(handlers, **settings)
 
 
-def start_server():
+def start_server(port=8080):
     app = make_app()
-    app.listen(8080)
+    app.listen(port)
     tornado.ioloop.IOLoop.current().start()
 
